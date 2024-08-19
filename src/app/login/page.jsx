@@ -13,9 +13,10 @@ export default function Loginpage() {
 
   return (
     <>
-
+    
       <NavBar />
-      
+      <h1>Login</h1>
+    
     </>
   );
 }

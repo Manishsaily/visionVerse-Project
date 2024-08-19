@@ -6,15 +6,15 @@ import StylePage from "./style/page";
 import EditorPage from "./template/page";
 import SettingsPage from "./setting/page";
 import Loginpage from "./login/page";
+import Landingpage from "./home/page";
 
-
-export default function Home() {
+export default function App() {
 
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Loginpage />} />
+          <Route path="/" element={<Landingpage />} />
           <Route path="/login" element={<Loginpage />} />
           <Route path="/template" element={<EditorPage />} />
           <Route path="/style" element={<StylePage />} />

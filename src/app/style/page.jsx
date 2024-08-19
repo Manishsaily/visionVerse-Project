@@ -5,7 +5,6 @@ export default function StylePage() {
     <div>
       <NavBar />
       <h1>Style Page</h1>
-      <p>This is the style page content.</p>
     </div>
   );
 }
