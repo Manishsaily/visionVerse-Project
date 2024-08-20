@@ -1,15 +1,16 @@
-"use client"
 
 import Link from 'next/link';
 
 
+
 const NavBar = () => {
+
 
   return (
 
     <div>
       <div className="flex justify-between items-center bg-[#50A2A7] p-5">
-        <Link href = "/" passHref>
+        <Link href = "/">
         <button
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
         >

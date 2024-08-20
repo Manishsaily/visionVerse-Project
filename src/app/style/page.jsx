@@ -1,10 +1,7 @@
-import NavBar from "../components/NavBar";
+import React from 'react'
 
 export default function StylePage() {
   return (
-    <div>
-      <NavBar />
-      <h1>Style Page</h1>
-    </div>
-  );
+    <div>StylePage</div>
+  )
 }

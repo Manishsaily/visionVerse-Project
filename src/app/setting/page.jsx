@@ -1,16 +1,7 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
 
-const SettingsPage = () => {
+export default function EditorPage(){
   return (
-    <>
-      <div>
-        <NavBar />
-        settings
-      </div>
-    </>
-   
+    <div>EditorPage</div>
   )
 }
-
-export default SettingsPage

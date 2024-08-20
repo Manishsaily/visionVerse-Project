@@ -1,12 +1,7 @@
-import React from 'react';
-import NavBar from '../components/NavBar';
+import React from 'react'
 
-export default function EditorPage () {
+export default function Templatepage() {
   return (
-    <div>
-      <NavBar />
-      <h1>Editor Page</h1>
-    </div>
-  );
+    <div>Templatepage</div>
+  )
 }
-
