@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <div>
-        {pathname !== '/' && <NavBar />}
+        {pathname !== '/' && pathname !== '/testType' && <NavBar />}
         <main>{children}</main>
         </div>
       </body>

@@ -12,7 +12,7 @@ const Quizselection = () => {
               <h1 className=" font-extrabold text-xl ">A Fun Quiz</h1>
               <div className="w-full justify-center flex">
                 <button className=" bg-white px-5 py-2 rounded-sm text-black hover:cursor-pointer">
-                  <Link href="/style" >Begin Creation</Link>
+                  <Link href="/testType" >Begin Creation</Link>
                 </button>
               </div>
             </div>

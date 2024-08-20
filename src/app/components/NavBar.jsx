@@ -18,7 +18,6 @@ const NavBar = () => {
         </button>
         </Link>
 
-        <h1 className="text-black font-bold">This is the Top of the page</h1>
         <button
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg"
         //   onClick={() => handleNavigation('')}  
