@@ -9,12 +9,12 @@ const Quizselection = () => {
           </h1>
           <div className=" flex justify-center items-center">
             <div className=" w-[300px] px-8 py-4 shadow-2xl bg-blue-400 text-white flex justify-center items-center flex-col gap-6 ">
-              <h1 className=" font-extrabold text-xl ">A Fun Quiz</h1>
-              <div className="w-full justify-center flex">
-                <button className=" bg-white px-5 py-2 rounded-sm text-black hover:cursor-pointer">
-                  <Link href="/testType" >Begin Creation</Link>
-                </button>
-              </div>
+              <h1 className=" font-extrabold text-xl ">Lets Create!</h1>
+             
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-full transition-transform transform-gpu hover:-translate-y-1 hover:shadow-lg">
+                <Link href="/testType" >Begin Creation</Link>
+              </button>
+           
             </div>
           </div>
         </div>
