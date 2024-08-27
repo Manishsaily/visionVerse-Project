@@ -62,7 +62,7 @@ CREATE TABLE "User"(
   "Username" text,
   "Password" text,
   "Email" text,
-  "CreationDate" text,
+  "CreationDate" date,
   "Quiz_QuizID" integer NOT NULL,
   CONSTRAINT "User_pkey" PRIMARY KEY("UserID")
 );
