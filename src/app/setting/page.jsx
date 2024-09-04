@@ -14,16 +14,16 @@ export default function EditorPage() {
   const [layout, setLayout] = useState('stacked'); // Default layout
 
   // Handle change for a question in a specific template
-  const handleQuestionChange = (index, e) => {
+  const handleQuestionChange = (index, userChange) => {
     const newTemplates = [...templates];
-    newTemplates[index].question = e.target.value;
+    newTemplates[index].question = userChange.target.value;
     setTemplates(newTemplates);
   };
 
   // Handle change for an answer in a specific template
-  const handleAnswerChange = (templateIndex, answerIndex, e) => {
+  const handleAnswerChange = (templateIndex, answerIndex, userChange) => {
     const newTemplates = [...templates];
-    newTemplates[templateIndex].answers[answerIndex] = e.target.value;
+    newTemplates[templateIndex].answers[answerIndex] = userChange.target.value;
     setTemplates(newTemplates);
   };
 
@@ -94,7 +94,7 @@ export default function EditorPage() {
               <input
                 type="text"
                 value={template.question}
-                onChange={(e) => handleQuestionChange(templateIndex, e)}
+                onChange={(userChange) => handleQuestionChange(templateIndex, userChange)}
                 className="w-full mb-2 text-xl p-2 border border-gray-300 rounded-lg"
                 placeholder={`Question ${templateIndex + 1}`}
               />
@@ -105,7 +105,7 @@ export default function EditorPage() {
                   key={answerIndex}
                   type="text"
                   value={answer}
-                  onChange={(e) => handleAnswerChange(templateIndex, answerIndex, e)}
+                  onChange={(userChange) => handleAnswerChange(templateIndex, answerIndex, userChange)}
                   className="w-full mb-2 text-xl p-2 border border-gray-300 rounded-lg"
                   placeholder={`Answer ${answerIndex + 1}`}
                 />
