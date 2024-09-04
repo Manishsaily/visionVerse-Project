@@ -10,7 +10,7 @@ export default function EditorPage() {
       answers: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'],
     },
   ]);
-  const [isBold, setIsBold] = useState(false);
+  const [islarge, setIsBig] = useState(false);
   const [layout, setLayout] = useState('stacked'); // Default layout
 
   // Handle change for a question in a specific template
@@ -46,8 +46,8 @@ export default function EditorPage() {
   };
 
   // Toggle text boldness
-  const toggleBold = () => {
-    setIsBold(!isBold);
+  const toggleSize = () => {
+    setIsBig(!islarge);
   };
 
   // Handle layout change
@@ -62,10 +62,10 @@ export default function EditorPage() {
         <div className="mb-4">
           {/* Text Formatting Controls */}
           <button
-            onClick={toggleBold}
-            className={`py-2 px-4 rounded-lg ${isBold ? 'bg-gray-800 text-white' : 'bg-gray-300 text-black'}`}
+            onClick={toggleSize}
+            className={`py-2 px-4 rounded-lg ${islarge ? 'bg-gray-800 text-white' : 'bg-gray-300 text-black'}`}
           >
-            {isBold ? 'Bold On' : 'Bold Off'}
+            {islarge ? 'Text Large' : 'Text Small'}
           </button>
         </div>
 
@@ -136,7 +136,7 @@ export default function EditorPage() {
             <TemplatePreview
               questions={[template.question]}
               answers={template.answers}
-              isBold={isBold}
+              islarge={islarge}
               layout={layout} // Pass layout to TemplatePreview
             />
           </div>

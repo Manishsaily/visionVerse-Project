@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function TemplatePreview({ questions, answers, isBold, layout }) {
+export default function TemplatePreview({ questions, answers, islarge, layout }) {
 
   return (
-    <div className="w-full max-w-md ml-64 p-4 bg-white rounded-lg shadow-lg">
+    <div className="w-full max-w-md ml-64 p-4 bg-white rounded-lg shadow-lg"> 
       {/* Phone Screen Container */}
       <div className="relative w-full h-[725px] mx-auto border border-gray-300 rounded-lg overflow-hidden">
         {/* Image at the Top */}
@@ -17,7 +17,7 @@ export default function TemplatePreview({ questions, answers, isBold, layout }) 
         <div className="p-4 mt-24">
           {/* Display Question with  Bold Styling */}
           {questions.map((question, index) => (
-            <p key={index} className={`mb-4 ${isBold ? 'font-bold' : ''}`}>
+            <p key={index} className={`mb-4 ${islarge ? 'text-2xl' : ''}`}>
               {question}
             </p>
           ))}
