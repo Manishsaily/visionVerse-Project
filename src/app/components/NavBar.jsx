@@ -9,7 +9,7 @@ const tabsData = [
 
   },
   {
-    label: "Template",
+    label: "Layouts",
     links: "/template"
   },
   {
