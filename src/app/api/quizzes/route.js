@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // Handle GET requests
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId"); // Get userId from query parameters
+  const userId = searchParams.get("userId");
 
   if (!userId) {
     return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -20,17 +20,17 @@ export async function GET(request) {
         },
         body: JSON.stringify({
           query: `
-            query ($userId: Int!) {
-              Quiz(where: { User_UserID: { _eq: $userId } }) {
-                QuizID
-                Name
-                Description
-                DateCreated
-              }
+          query ($userId: Int!) {
+            Quiz(where: { User_UserID: { _eq: $userId } }) {
+              QuizID
+              Name
+              Description
+              DateCreated
             }
-          `,
+          }
+        `,
           variables: {
-            userId: parseInt(userId, 10), // Ensure it's an integer
+            userId: parseInt(userId, 10),
           },
         }),
       }
@@ -58,7 +58,7 @@ export async function GET(request) {
 
 // Handle POST requests
 export async function POST(request) {
-  const { name, description, templateId, userId } = await request.json(); // Extract userId
+  const { name, description, templateId, userId } = await request.json();
 
   const payload = {
     query: `
@@ -67,7 +67,7 @@ export async function POST(request) {
           Name: $name,
           Description: $description,
           DateCreated: "${new Date().toISOString()}",
-          Template_TemplateID: $templateId,
+          TemplateID: $templateId,
           User_UserID: $userId
         }) {
           returning {
@@ -81,11 +81,11 @@ export async function POST(request) {
       name,
       description,
       templateId: parseInt(templateId, 10),
-      userId: parseInt(userId, 10), // Ensure it's an integer
+      userId: parseInt(userId, 10),
     },
   };
 
-  console.log("Payload being sent to DB:", JSON.stringify(payload, null, 2)); // Log the payload
+  console.log("Payload being sent to DB:", JSON.stringify(payload, null, 2));
 
   try {
     const response = await fetch(

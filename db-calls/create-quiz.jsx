@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function StylePage() {
   const [templates, setTemplates] = useState([]);
@@ -8,6 +7,7 @@ export default function StylePage() {
   const [description, setDescription] = useState("");
   const [templateId, setTemplateId] = useState("");
 
+  // Fetch templates when the component mounts
   useEffect(() => {
     const fetchTemplates = async () => {
       const response = await fetch("/api/templates");
@@ -18,37 +18,44 @@ export default function StylePage() {
     fetchTemplates();
   }, []);
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userId = 1; // Replace with the actual user ID
+
     try {
       const response = await fetch("/api/quizzes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, description, templateId, userId }),
+        body: JSON.stringify({
+          name,
+          description,
+          templateId: parseInt(templateId, 10),
+          userId,
+        }), // Ensure templateId is sent as an integer
       });
+
       const result = await response.json();
-      console.log(result);
-      // Handle success (e.g., show a message or redirect)
+
+      // Handle response
       if (result.error) {
-        // Handle error
         console.error(result.error);
+        alert("Failed to create quiz: " + result.error); // Display error
       } else {
-        // Quiz created successfully
         alert("Quiz created successfully!");
-        // Reset form fields if needed
+        // Reset form fields
         setName("");
         setDescription("");
         setTemplateId("");
       }
     } catch (error) {
-      console.error(error);
-      console.log();
-      // Handle error
+      console.error("Error:", error);
+      alert("An error occurred while creating the quiz."); // Display error
     }
   };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-1/3 p-4 bg-white border-r border-gray-300 rounded-xl text-black">
@@ -60,17 +67,20 @@ export default function StylePage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="border p-1 rounded w-full mb-2"
           />
           <textarea
             placeholder="Quiz Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
+            className="border p-1 rounded w-full mb-2"
           />
           <select
             value={templateId}
             onChange={(e) => setTemplateId(e.target.value)}
             required
+            className="border p-1 rounded w-full mb-2"
           >
             <option value="">Select Template</option>
             {templates.map((template) => (
@@ -79,7 +89,12 @@ export default function StylePage() {
               </option>
             ))}
           </select>
-          <button type="submit">Create Quiz</button>
+          <button
+            type="submit"
+            className="mt-4 p-2 bg-blue-500 text-white rounded"
+          >
+            Create Quiz
+          </button>
         </form>
       </div>
     </div>

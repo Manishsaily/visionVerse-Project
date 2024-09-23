@@ -9,28 +9,18 @@ CREATE TABLE "User" (
   CONSTRAINT "User_pkey" PRIMARY KEY("UserID")
 );
 
-CREATE TABLE "Template" (
-  "TemplateID" serial NOT NULL,
-  "Colour" integer,
-  "Name" text,
-  "Layout" text,
-  "IsLarge" boolean,
-  "Number" integer,
-  CONSTRAINT "Template_pkey" PRIMARY KEY("TemplateID")
-);
-
 CREATE TABLE "Quiz" (
   "QuizID" serial NOT NULL,
   "Name" text NOT NULL,
   "Description" text,
   "DateCreated" date NOT NULL,
   "User_UserID" integer NOT NULL,
-  "Template_TemplateID" integer NOT NULL,
+  "TemplateID" integer NOT NULL,
+  "Layout" text,
+  "IsLarge" boolean,
   CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID"),
   CONSTRAINT "Quiz_User_UserID_fkey"
-    FOREIGN KEY ("User_UserID") REFERENCES "User" ("UserID"),
-  CONSTRAINT "Quiz_Template_TemplateID_fkey"
-    FOREIGN KEY ("Template_TemplateID") REFERENCES "Template" ("TemplateID")
+    FOREIGN KEY ("User_UserID") REFERENCES "User" ("UserID")
 );
 
 CREATE TABLE "Page" (
