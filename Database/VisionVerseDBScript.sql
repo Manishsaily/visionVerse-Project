@@ -10,9 +10,12 @@ CREATE TABLE "User" (
 );
 
 CREATE TABLE "Template" (
-  "TemplateID" integer NOT NULL,
+  "TemplateID" serial NOT NULL,
   "Colour" integer,
   "Name" text,
+  "Layout" text,
+  "IsLarge" boolean,
+  "Number" integer,
   CONSTRAINT "Template_pkey" PRIMARY KEY("TemplateID")
 );
 
