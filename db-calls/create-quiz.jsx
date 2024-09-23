@@ -9,13 +9,14 @@ export default function StylePage() {
 
   // Fetch templates when the component mounts
   useEffect(() => {
-    const fetchTemplates = async () => {
-      const response = await fetch("/api/templates");
-      const data = await response.json();
-      setTemplates(data);
-    };
-
-    fetchTemplates();
+    // Hardcoded templates for testing
+    const hardcodedTemplates = [
+      { TemplateID: 1, Name: "Template 1" },
+      { TemplateID: 2, Name: "Template 2" },
+      { TemplateID: 3, Name: "Template 3" },
+      { TemplateID: 4, Name: "Template 4" },
+    ];
+    setTemplates(hardcodedTemplates);
   }, []);
 
   // Handle form submission
