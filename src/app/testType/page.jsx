@@ -25,7 +25,27 @@ export default function testType() {
     };
 
   return (
+
     <div className="flex flex-col">
+
+        {/* Navbar */}
+        <nav className='bg-blue-600 text-white p-4'>
+            <ul className='flex justify-between'>
+                <li>
+                    <Link href= "/">
+                        <button style={{borderColor: 'white', borderWidth: '2px', borderRadius: '20px'}}>
+                            <a style={{padding: "15px", paddingLeft: "25px", paddingRight: "25px"}}>Cancel</a>
+                        </button>
+                    </Link>
+                </li>
+                <li>
+                    <button style={{borderColor: 'lightgray', borderWidth: '2px', borderRadius: '20px'}} disabled>
+                        <a style={{padding: "15px", paddingLeft: "25px", paddingRight: "25px", color: 'lightgray'}}>Save</a>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
         <header className="p-6 text-center">
             <h1 className="text-4xl font-bold">Choose the Test Type</h1>
         </header>
@@ -35,9 +55,9 @@ export default function testType() {
             {/* Survey */} 
             <button
             className={`flex-1 m-2 p-1 ${activeButton === 1 ? "bg-blue-500" : "border-r-transparent"}`}
-            style={{ height: '600px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
+            style={{ height: '550px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
             onClick={() => handleButtonClick(1)}>
-                <div className={`h-full w-full p-4 flex flex-col justify-between ${activeButton === 1 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
+                <div className={`h-full w-full p-4 flex flex-col justify-between shadow-lg ${activeButton === 1 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
                 style={{borderRadius: '50px'}}>
                     <div style={{paddingLeft: "10px", paddingRight: "10px"}}>
                         <div className='flex justify-between items-center' style={{paddingTop: '30px', paddingRight: '20px'}}>
@@ -75,9 +95,9 @@ export default function testType() {
             {/* Quiz */} 
             <button
             className={`flex-1 m-2 p-1 ${activeButton === 2 ? "bg-blue-500" : "border-r-transparent"}`}
-            style={{ height: '600px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
+            style={{ height: '550px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
             onClick={() => handleButtonClick(2)}>
-                <div className={`h-full w-full p-4 flex flex-col justify-between ${activeButton === 2 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
+                <div className={`h-full w-full p-4 flex flex-col justify-between shadow-lg ${activeButton === 2 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
                 style={{borderRadius: '50px'}}>
                     <div style={{paddingLeft: "10px", paddingRight: "10px"}}>
                         <div className='flex justify-between items-center' style={{paddingTop: '30px', paddingRight: '20px'}}>
@@ -114,9 +134,9 @@ export default function testType() {
             {/* Personality Test */} 
             <button
             className={`flex-1 m-2 p-1 ${activeButton === 3 ? "bg-blue-500" : "border-r-transparent"}`}
-            style={{ height: '600px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
+            style={{ height: '550px', display: 'flex', flexDirection: 'column', borderRadius: '53px'}}
             onClick={() => handleButtonClick(3)}>
-                <div className={`h-full w-full p-4 rounded-xl flex flex-col justify-between ${activeButton === 3 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
+                <div className={`h-full w-full p-4 rounded-xl flex flex-col justify-between shadow-lg ${activeButton === 3 ? "bg-gray-200" : "bg-gray-200 text-black"}`}
                 style={{borderRadius: '50px'}}>
                     <div style={{paddingLeft: "10px", paddingRight: "10px"}}>
                         <div className='flex justify-between items-center' style={{paddingTop: '30px', paddingRight: '20px'}}>
@@ -156,7 +176,7 @@ export default function testType() {
  
         <div className="flex justify-center p-4">
             <Link href="/style">
-                <button className="bg-blue-500 text-white py-2 px-4" style={{borderRadius: '25px', paddingRight: '50px', paddingLeft: '50px'}}>Continue</button>
+                <button className="bg-blue-600 text-white py-2 px-4 shadow-lg" style={{borderRadius: '25px', paddingRight: '50px', paddingLeft: '50px'}}>Continue</button>
             </Link>
         </div>
     </div>
