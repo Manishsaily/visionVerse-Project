@@ -196,6 +196,14 @@ export default function EditorPage() {
     }
   });
 
+  {/* Progress Counter Array */}
+  const [countNumbers, setCountNumbers] = useState ([]);
+  const addNumber = () => {
+    const newCountNumber = countNumbers[countNumbers.length - 1] + 1;
+    setCountNumbers([...countNumbers, newCountNumber])
+    console.log(addNumber)
+  }
+
   return (
     <div className="flex min-h-full bg-gray-100">
     {/* Editor Controls */}
@@ -294,7 +302,7 @@ export default function EditorPage() {
 
           <button
             type="button"
-            onClick={addNewTemplate}
+            onClick={() => {addNewTemplate(); addNumber();}}
             className="bg-green-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
           >
             <AiOutlinePlus />
