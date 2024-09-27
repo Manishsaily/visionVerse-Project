@@ -1,96 +1,74 @@
-SET check_function_bodies = false
-;
+SET check_function_bodies = false;
 
-CREATE TABLE "Page"(
+CREATE TABLE "User" (
+  "UserID" serial NOT NULL,
+  "Username" text NOT NULL,
+  "Password" text NOT NULL,
+  "Email" text NOT NULL,
+  "CreationDate" date NOT NULL,
+  CONSTRAINT "User_pkey" PRIMARY KEY("UserID")
+);
+
+CREATE TABLE "Quiz" (
+  "QuizID" serial NOT NULL,
+  "Name" text NOT NULL,
+  "Description" text,
+  "DateCreated" date NOT NULL,
+  "User_UserID" integer NOT NULL,
+  "TemplateID" integer NOT NULL,
+  "Layout" text,
+  "IsLarge" boolean,
+  CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID"),
+  CONSTRAINT "Quiz_User_UserID_fkey"
+    FOREIGN KEY ("User_UserID") REFERENCES "User" ("UserID")
+);
+
+CREATE TABLE "Page" (
   "PageID" integer NOT NULL,
   "PageType" text,
   "Index" integer,
   "Quiz_QuizID" integer NOT NULL,
-  CONSTRAINT "Page_pkey" PRIMARY KEY("PageID")
+  CONSTRAINT "Page_pkey" PRIMARY KEY("PageID"),
+  CONSTRAINT "Page_Quiz_QuizID_fkey"
+    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
 
-CREATE TABLE "Question"(
+CREATE TABLE "Question" (
   "QuestionID" integer NOT NULL,
-  "QuestionText" text,
+  "QuestionText" text NOT NULL,
   "Page_PageID" integer NOT NULL,
-  CONSTRAINT "Question_pkey" PRIMARY KEY("QuestionID")
+  CONSTRAINT "Question_pkey" PRIMARY KEY("QuestionID"),
+  CONSTRAINT "Question_Page_PageID_fkey"
+    FOREIGN KEY ("Page_PageID") REFERENCES "Page" ("PageID")
 );
 
-CREATE TABLE "QuestionOption"(
+CREATE TABLE "QuestionOption" (
   "OptionID" integer NOT NULL,
   "Category" text,
   "Question_QuestionID" integer NOT NULL,
-  CONSTRAINT "QuestionOption_pkey" PRIMARY KEY("OptionID")
+  CONSTRAINT "QuestionOption_pkey" PRIMARY KEY("OptionID"),
+  CONSTRAINT "QuestionOption_Question_QuestionID_fkey"
+    FOREIGN KEY ("Question_QuestionID") REFERENCES "Question" ("QuestionID")
 );
 
-CREATE TABLE "Quiz"(
-  "QuizID" integer NOT NULL,
-  "Name" text,
-  "Description" text,
-  "DateCreated" date,
-  CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID")
-);
-
-CREATE TABLE "QuizResult"(
+CREATE TABLE "QuizResult" (
   "ResultID" integer NOT NULL,
   "StartDate" date,
   "EndDate" date,
   "QuizAttempts" integer,
   "Quiz_QuizID" integer NOT NULL,
-  CONSTRAINT "QuizResult_pkey" PRIMARY KEY("ResultID")
+  CONSTRAINT "QuizResult_pkey" PRIMARY KEY("ResultID"),
+  CONSTRAINT "QuizResult_Quiz_QuizID_fkey"
+    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
 
-CREATE TABLE "Reward"(
+CREATE TABLE "Reward" (
   "RewardID" integer NOT NULL,
   "Name" text,
   "Barcode" bytea,
   "CategoryScore" integer,
   "Quiz_QuizID" integer NOT NULL,
-  CONSTRAINT "Reward_pkey" PRIMARY KEY("RewardID")
+  CONSTRAINT "Reward_pkey" PRIMARY KEY("RewardID"),
+  CONSTRAINT "Reward_Quiz_QuizID_fkey"
+    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
-
-CREATE TABLE "Template"(
-  "TemplateID" integer NOT NULL,
-  "Colour" integer,
-  "Name" text,
-  "User_UserID" integer NOT NULL,
-  CONSTRAINT "Template_pkey" PRIMARY KEY("TemplateID")
-);
-
-CREATE TABLE "User"(
-  "UserID" integer NOT NULL,
-  "Username" text,
-  "Password" text,
-  "Email" text,
-  "CreationDate" date,
-  "Quiz_QuizID" integer NOT NULL,
-  CONSTRAINT "User_pkey" PRIMARY KEY("UserID")
-);
-
-ALTER TABLE "Reward"
-  ADD CONSTRAINT "Reward_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID");
-
-ALTER TABLE "QuizResult"
-  ADD CONSTRAINT "QuizResult_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID");
-
-ALTER TABLE "User"
-  ADD CONSTRAINT "User_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID");
-
-ALTER TABLE "Template"
-  ADD CONSTRAINT "Template_User_UserID_fkey"
-    FOREIGN KEY ("User_UserID") REFERENCES "User" ("UserID");
-
-ALTER TABLE "Page"
-  ADD CONSTRAINT "Page_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID");
-
-ALTER TABLE "Question"
-  ADD CONSTRAINT "Question_Page_PageID_fkey"
-    FOREIGN KEY ("Page_PageID") REFERENCES "Page" ("PageID");
-
-ALTER TABLE "QuestionOption"
-  ADD CONSTRAINT "QuestionOption_Question_QuestionID_fkey"
-    FOREIGN KEY ("Question_QuestionID") REFERENCES "Question" ("QuestionID");

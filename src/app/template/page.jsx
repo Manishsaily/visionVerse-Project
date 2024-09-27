@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import TemplatePreview from '../components/TemplatePreview';
+import { MdViewStream, MdViewModule } from 'react-icons/md';
 
 export default function TemplatePage() {
   const [templates] = useState([
@@ -48,24 +49,49 @@ export default function TemplatePage() {
     };
   }, []);
 
+  const [backgroundColor] = useState(() => {
+    try {
+      return localStorage.getItem('backgroundColor') || 'white';
+    } catch (error) {
+      console.error('Error accessing localStorage', error);
+      return 'white';
+    }
+  });
+
+  const [buttonColor] = useState(() => {
+    try {
+      return localStorage.getItem('buttonColor') || 'lightblue';
+    } catch (error) {
+      console.error('Error accessing localStorage', error);
+      return 'lightblue';
+    }
+  });
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Editor Controls */}
-      <div className="w-1/3 p-4 bg-white border-r border-gray-300 rounded-xl">
-
+      <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
         {/* Layout Selector */}
-        <h1>Change the Question Layout</h1>
-        <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-4">Change the Question Layout</h1>
+        
+        <div className="mb-4 flex gap-2">
           <button
             onClick={() => handleLayoutChange('stacked')}
-            className={`py-2 px-4 rounded-lg mr-2 ${layout === 'stacked' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+            className={`py-2 px-4 rounded-full flex items-center gap-2 ${
+              layout === 'stacked' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+            } hover:bg-blue-400 transition duration-200 ease-in-out`}
           >
+            <MdViewStream />
             Stacked
           </button>
+
           <button
             onClick={() => handleLayoutChange('corner')}
-            className={`py-2 px-4 rounded-lg ${layout === 'corner' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+            className={`py-2 px-4 rounded-full flex items-center gap-2 ${
+              layout === 'corner' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+            } hover:bg-blue-400 transition duration-200 ease-in-out`}
           >
+            <MdViewModule />
             Corners
           </button>
         </div>
@@ -79,6 +105,8 @@ export default function TemplatePage() {
               questions={[template.question]}
               answers={template.answers}
               layout={layout} // Pass layout to TemplatePreview
+              buttonColor={buttonColor}
+              backgroundColor={backgroundColor}
             />
           </div>
         ))}
