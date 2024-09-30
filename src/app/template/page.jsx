@@ -73,6 +73,7 @@ export default function TemplatePage() {
     const layout = localStorage.getItem("layout") || "stacked";
     const backgroundColor = localStorage.getItem("backgroundColor") || "white";
     const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
+    const isLarge = localStorage.getItem("isLarge") || false;
 
     try {
       const response = await fetch("/api/quizzes", {
@@ -85,6 +86,7 @@ export default function TemplatePage() {
           backgroundColor,
           buttonColor,
           userId,
+          isLarge,
         }), // Ensure templateId is sent as an integer
       });
 

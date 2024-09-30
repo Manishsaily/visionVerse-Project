@@ -31,6 +31,13 @@ export default function EditorPage() {
   });
 
   const [islarge, setIsBig] = useState(false);
+  useEffect(() => {
+    try {
+      localStorage.setItem("isLarge", JSON.stringify(islarge));
+    } catch (error) {
+      console.error("Error saving islarge to localStorage", error);
+    }
+  }, [islarge]);
 
   const [layout, setLayout] = useState(() => {
     try {

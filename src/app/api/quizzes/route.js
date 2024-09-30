@@ -10,7 +10,8 @@ export async function GET(request) {
   }
 
   try {
-    const response = await fetch(
+    // Step 1: Fetch quizzes
+    const quizResponse = await fetch(
       process.env.NEXT_PUBLIC_HASURA_PROJECT_ENDPOINT,
       {
         method: "POST",
@@ -20,15 +21,17 @@ export async function GET(request) {
         },
         body: JSON.stringify({
           query: `
-          query ($userId: Int!) {
-            Quiz(where: { User_UserID: { _eq: $userId } }) {
-              QuizID
-              Layout
-              BackgroundColor
-              ButtonColor
+            query ($userId: Int!) {
+              Quiz(where: { User_UserID: { _eq: $userId } }) {
+                QuizID
+                Layout
+                BackgroundColor
+                ButtonColor
+                DateCreated
+                IsLarge
+              }
             }
-          }
-        `,
+          `,
           variables: {
             userId: parseInt(userId, 10),
           },
@@ -36,17 +39,57 @@ export async function GET(request) {
       }
     );
 
-    const data = await response.json();
+    const quizzesData = await quizResponse.json();
 
-    if (data.errors) {
-      console.error("GraphQL errors:", data.errors);
+    if (quizzesData.errors) {
+      console.error("GraphQL errors:", quizzesData.errors);
       return NextResponse.json(
         { error: "Failed to fetch quizzes" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json(data.data.Quiz);
+    const quizzes = quizzesData.data.Quiz;
+
+    // Step 2: Fetch questions for each quiz
+    const quizzesWithQuestions = await Promise.all(
+      quizzes.map(async (quiz) => {
+        const questionsResponse = await fetch(
+          process.env.NEXT_PUBLIC_HASURA_PROJECT_ENDPOINT,
+          {
+            method: "POST",
+            headers: {
+              "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+                query ($quizId: Int!) {
+                  Question(where: { QuizID: { _eq: $quizId } }) {
+                    QuestionID
+                    QuestionText
+                    Answers
+                  }
+                }
+              `,
+              variables: {
+                quizId: quiz.QuizID,
+              },
+            }),
+          }
+        );
+
+        const questionsData = await questionsResponse.json();
+        if (questionsData.errors) {
+          console.error("GraphQL errors:", questionsData.errors);
+          return { ...quiz, Questions: [] }; // Return quiz with empty questions on error
+        }
+
+        return { ...quiz, Questions: questionsData.data.Question };
+      })
+    );
+
+    return NextResponse.json(quizzesWithQuestions);
   } catch (error) {
     console.error("Network error:", error);
     return NextResponse.json(
@@ -58,19 +101,21 @@ export async function GET(request) {
 
 // Handle POST requests
 export async function POST(request) {
-  const { layout, backgroundColor, buttonColor, userId } = await request.json();
+  const { layout, backgroundColor, buttonColor, userId, isLarge } =
+    await request.json();
 
   // Get the current date in ISO format (YYYY-MM-DD)
   const dateCreated = new Date().toISOString().split("T")[0]; // Extract date part
 
   const payload = {
     query: `
-      mutation InsertQuiz($layout: String!, $backgroundColor: String, $buttonColor: String, $userId: Int!, $dateCreated: date!) {
+      mutation InsertQuiz($layout: String!, $backgroundColor: String, $buttonColor: String, $userId: Int!, $dateCreated: date!, $isLarge: Boolean!) {
         insert_Quiz(objects: {
           Layout: $layout,
           BackgroundColor: $backgroundColor,
           ButtonColor: $buttonColor,
           User_UserID: $userId,
+          IsLarge: $isLarge,
           DateCreated: $dateCreated
         }) {
           returning {
@@ -85,6 +130,7 @@ export async function POST(request) {
       backgroundColor,
       buttonColor,
       userId: parseInt(userId, 10),
+      isLarge,
       dateCreated, // Use the date-only string
     },
   };
