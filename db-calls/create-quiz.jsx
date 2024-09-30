@@ -46,10 +46,6 @@ export default function StylePage() {
         alert("Failed to create quiz: " + result.error); // Display error
       } else {
         alert("Quiz created successfully!");
-        // Reset form fields
-        setName("");
-        setDescription("");
-        setTemplateId("");
       }
     } catch (error) {
       console.error("Error:", error);

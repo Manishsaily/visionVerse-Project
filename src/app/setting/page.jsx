@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
-import { FiImage, FiTrash, FiCheck, FiRefreshCw } from 'react-icons/fi';
-import { AiOutlinePlus, AiOutlineQuestionCircle } from 'react-icons/ai';
+import { FiImage, FiTrash, FiCheck, FiRefreshCw } from "react-icons/fi";
+import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
 
 export default function EditorPage() {
-  
   const [templates, setTemplates] = useState(() => {
     try {
       const savedTemplates = localStorage.getItem("templates");
@@ -132,25 +131,30 @@ export default function EditorPage() {
 
     setLayout("stacked");
     setIsBig(false); // Reset to small text
-    setBackgroundColor("white")
-    setButtonColor("lightblue")
+    setBackgroundColor("white");
+    setButtonColor("lightblue");
   };
 
   // Handle submission of the questions to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const quizId = 1; // Replace with actual quiz ID
+    const quizId = localStorage.getItem("QuizID"); // Retrieve the Quiz ID from local storage
+
+    if (!quizId) {
+      alert("Quiz ID is required to submit questions.");
+      return;
+    }
 
     const questionsToSubmit = templates
       .map((template) => ({
-        questionText: template.question.trim() || "Default Question", // Ensure there's a value
+        questionText: template.question.trim() || "Default Question",
         answers: template.answers.map(
           (answer) => answer.trim() || "Default Answer"
-        ), // Ensure answers are filled
-        quizId,
+        ),
+        quizId: parseInt(quizId, 10), // Ensure quizId is an integer
       }))
-      .filter((q) => q.questionText); // Filter out empty questions if any
+      .filter((q) => q.questionText);
 
     if (questionsToSubmit.length === 0) {
       alert("No valid questions to submit.");
@@ -180,172 +184,173 @@ export default function EditorPage() {
 
   const [backgroundColor, setBackgroundColor] = useState(() => {
     try {
-      return localStorage.getItem('backgroundColor') || 'white';
+      return localStorage.getItem("backgroundColor") || "white";
     } catch (error) {
-      console.error('Error accessing localStorage', error);
-      return 'white';
+      console.error("Error accessing localStorage", error);
+      return "white";
     }
   });
 
   const [buttonColor, setButtonColor] = useState(() => {
     try {
-      return localStorage.getItem('buttonColor') || 'lightblue';
+      return localStorage.getItem("buttonColor") || "lightblue";
     } catch (error) {
-      console.error('Error accessing localStorage', error);
-      return 'lightblue';
+      console.error("Error accessing localStorage", error);
+      return "lightblue";
     }
   });
 
-  {/* Progress Counter Array */}
-  const [countNumbers, setCountNumbers] = useState ([]);
+  {
+    /* Progress Counter Array */
+  }
+  const [countNumbers, setCountNumbers] = useState([]);
   const addNumber = () => {
     const newCountNumber = countNumbers[countNumbers.length - 1] + 1;
-    setCountNumbers([...countNumbers, newCountNumber])
-    console.log(addNumber)
-  }
+    setCountNumbers([...countNumbers, newCountNumber]);
+    console.log(addNumber);
+  };
 
   return (
     <div className="flex min-h-full bg-gray-100">
-    {/* Editor Controls */}
-    <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4 flex justify-between items-center">
-          <button
-            type="button"
-            onClick={toggleSize}
-            className={`py-2 px-4 flex items-center gap-2 rounded-full shadow-md ${
-              islarge ? "bg-gray-800 text-white" : "bg-gray-300 text-black"
-            }`}
-          >
-            <AiOutlineQuestionCircle />
-            {islarge ? "Text Large" : "Text Small"}
-          </button>
-        </div>
+      {/* Editor Controls */}
+      <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4 flex justify-between items-center">
+            <button
+              type="button"
+              onClick={toggleSize}
+              className={`py-2 px-4 flex items-center gap-2 rounded-full shadow-md ${
+                islarge ? "bg-gray-800 text-white" : "bg-gray-300 text-black"
+              }`}
+            >
+              <AiOutlineQuestionCircle />
+              {islarge ? "Text Large" : "Text Small"}
+            </button>
+          </div>
 
-        {/* Image URL Inputs */}
-        {templates.map((template, index) => (
-          <div key={index} className="mb-4">
-            <h1>Select a header image:</h1>
-            <div className="flex items-center mb-2 mr-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <FiImage />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(index, e)}
-                  className="border rounded-full p-2 w-full"
-                />
-              </label>
+          {/* Image URL Inputs */}
+          {templates.map((template, index) => (
+            <div key={index} className="mb-4">
+              <h1>Select a header image:</h1>
+              <div className="flex items-center mb-2 mr-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <FiImage />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(index, e)}
+                    className="border rounded-full p-2 w-full"
+                  />
+                </label>
+
+                {template.imageUrl && (
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  >
+                    <FiTrash />
+                    Remove Image
+                  </button>
+                )}
+              </div>
 
               {template.imageUrl && (
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-                >
-                  <FiTrash />
-                  Remove Image
-                </button>
-              )}
-            </div>
-
-            {template.imageUrl && (
-              <img
-                src={template.imageUrl}
-                alt={`Uploaded Preview ${index}`}
-                className="w-full h-32 object-cover rounded-lg mb-2"
-              />
-            )}
-          </div>
-        ))}
-
-        <div className="mb-4 text-black">
-          {templates.map((template, templateIndex) => (
-            <div key={templateIndex} className="mb-6">
-              <input
-                type="text"
-                value={template.question}
-                onChange={(userChange) =>
-                  handleQuestionChange(templateIndex, userChange)
-                }
-                className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
-                placeholder={`Question ${templateIndex + 1}`}
-              />
-
-              {template.answers.map((answer, answerIndex) => (
-                <input
-                  key={answerIndex}
-                  type="text"
-                  value={answer}
-                  onChange={(userChange) =>
-                    handleAnswerChange(
-                      templateIndex,
-                      answerIndex,
-                      userChange
-                    )
-                  }
-                  className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
-                  placeholder={`Answer ${answerIndex + 1}`}
+                <img
+                  src={template.imageUrl}
+                  alt={`Uploaded Preview ${index}`}
+                  className="w-full h-32 object-cover rounded-lg mb-2"
                 />
-              ))}
-
-              <button
-                type="button"
-                onClick={() => removeTemplate(templateIndex)}
-                className="bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-              >
-                <FiTrash />
-                Remove Question
-              </button>
+              )}
             </div>
           ))}
 
+          <div className="mb-4 text-black">
+            {templates.map((template, templateIndex) => (
+              <div key={templateIndex} className="mb-6">
+                <input
+                  type="text"
+                  value={template.question}
+                  onChange={(userChange) =>
+                    handleQuestionChange(templateIndex, userChange)
+                  }
+                  className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
+                  placeholder={`Question ${templateIndex + 1}`}
+                />
+
+                {template.answers.map((answer, answerIndex) => (
+                  <input
+                    key={answerIndex}
+                    type="text"
+                    value={answer}
+                    onChange={(userChange) =>
+                      handleAnswerChange(templateIndex, answerIndex, userChange)
+                    }
+                    className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
+                    placeholder={`Answer ${answerIndex + 1}`}
+                  />
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => removeTemplate(templateIndex)}
+                  className="bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  <FiTrash />
+                  Remove Question
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => {
+                addNewTemplate();
+                addNumber();
+              }}
+              className="bg-green-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+            >
+              <AiOutlinePlus />
+              Add Question
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <FiCheck />
+            Submit Questions
+          </button>
+
+          {/* Reset Button */}
           <button
             type="button"
-            onClick={() => {addNewTemplate(); addNumber();}}
-            className="bg-green-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+            onClick={resetTemplatesAndLayout}
+            className="mt-4 bg-yellow-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           >
-            <AiOutlinePlus />
-            Add Question
+            <FiRefreshCw />
+            Reset
           </button>
-        </div>
+        </form>
+      </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <FiCheck />
-          Submit Questions
-        </button>
-
-        {/* Reset Button */}
-        <button
-          type="button"
-          onClick={resetTemplatesAndLayout}
-          className="mt-4 bg-yellow-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-        >
-          <FiRefreshCw />
-          Reset
-        </button>
-      </form>
+      {/* Template Preview */}
+      <div className="flex-1 p-4">
+        {templates.map((template, index) => (
+          <div key={index} className="mb-6">
+            <TemplatePreview
+              questions={[template.question]}
+              answers={template.answers}
+              islarge={islarge}
+              layout={layout}
+              imageUrl={template.imageUrl}
+              buttonColor={buttonColor}
+              backgroundColor={backgroundColor}
+            />
+          </div>
+        ))}
+      </div>
     </div>
-
-    {/* Template Preview */}
-    <div className="flex-1 p-4">
-      {templates.map((template, index) => (
-        <div key={index} className="mb-6">
-          <TemplatePreview
-            questions={[template.question]}
-            answers={template.answers}
-            islarge={islarge}
-            layout={layout}
-            imageUrl={template.imageUrl}
-            buttonColor={buttonColor}
-            backgroundColor={backgroundColor}
-          />
-        </div>
-      ))}
-    </div>
-  </div>
   );
 }

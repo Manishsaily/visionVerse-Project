@@ -23,9 +23,9 @@ export async function GET(request) {
           query ($userId: Int!) {
             Quiz(where: { User_UserID: { _eq: $userId } }) {
               QuizID
-              Name
-              Description
-              DateCreated
+              Layout
+              BackgroundColor
+              ButtonColor
             }
           }
         `,
@@ -58,30 +58,34 @@ export async function GET(request) {
 
 // Handle POST requests
 export async function POST(request) {
-  const { name, description, templateId, userId } = await request.json();
+  const { layout, backgroundColor, buttonColor, userId } = await request.json();
+
+  // Get the current date in ISO format (YYYY-MM-DD)
+  const dateCreated = new Date().toISOString().split("T")[0]; // Extract date part
 
   const payload = {
     query: `
-      mutation InsertQuiz($name: String!, $description: String!, $templateId: Int!, $userId: Int!) {
+      mutation InsertQuiz($layout: String!, $backgroundColor: String, $buttonColor: String, $userId: Int!, $dateCreated: date!) {
         insert_Quiz(objects: {
-          Name: $name,
-          Description: $description,
-          DateCreated: "${new Date().toISOString()}",
-          TemplateID: $templateId,
-          User_UserID: $userId
+          Layout: $layout,
+          BackgroundColor: $backgroundColor,
+          ButtonColor: $buttonColor,
+          User_UserID: $userId,
+          DateCreated: $dateCreated
         }) {
           returning {
             QuizID
-            Name
+            Layout
           }
         }
       }
     `,
     variables: {
-      name,
-      description,
-      templateId: parseInt(templateId, 10),
+      layout,
+      backgroundColor,
+      buttonColor,
       userId: parseInt(userId, 10),
+      dateCreated, // Use the date-only string
     },
   };
 
