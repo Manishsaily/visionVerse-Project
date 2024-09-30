@@ -169,3 +169,61 @@ export async function POST(request) {
     );
   }
 }
+
+// Handle PATCH requests
+export async function PATCH(request) {
+  const { isLarge, quizID } = await request.json();
+
+  if (!quizID) {
+    return NextResponse.json({ error: "Quiz ID is required" }, { status: 400 });
+  }
+
+  try {
+    const payload = {
+      query: `
+        mutation UpdateQuiz($quizID: Int!, $isLarge: Boolean!) {
+          update_Quiz(where: { QuizID: { _eq: $quizID } }, _set: { IsLarge: $isLarge }) {
+            returning {
+              QuizID
+              IsLarge
+            }
+          }
+        }
+      `,
+      variables: {
+        quizID: parseInt(quizID, 10),
+        isLarge,
+      },
+    };
+
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_HASURA_PROJECT_ENDPOINT,
+      {
+        method: "POST",
+        headers: {
+          "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.errors) {
+      console.error("GraphQL errors:", data.errors);
+      return NextResponse.json(
+        { error: "Failed to update quiz" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(data.data.update_Quiz.returning);
+  } catch (error) {
+    console.error("Network error:", error);
+    return NextResponse.json(
+      { error: "Failed to update quiz" },
+      { status: 500 }
+    );
+  }
+}

@@ -19,47 +19,28 @@ const tabsData = [
 const handleQuizSubmit = async (e) => {
   e.preventDefault();
 
-  const layout = localStorage.getItem("layout") || "stacked";
-  const backgroundColor = localStorage.getItem("backgroundColor") || "white";
-  const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
   const isLarge = localStorage.getItem("isLarge") === "true"; // Ensure it's a boolean
-
   // Check if a quiz ID exists in local storage
   const quizID = localStorage.getItem("QuizID");
+  console.log("quizID", quizID);
+
+  if (!quizID) {
+    alert("No quiz ID found. Please create a quiz first.");
+    return; // Stop execution if no quiz ID is present
+  }
 
   try {
-    let response;
-
-    if (quizID) {
-      // If a quiz ID exists, update the existing quiz
-      response = await fetch(`/api/quizzes/${quizID}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          layout,
-          backgroundColor,
-          buttonColor,
-          isLarge,
-        }),
-      });
-    } else {
-      // If no quiz ID, create a new quiz
-      response = await fetch("/api/quizzes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          layout,
-          backgroundColor,
-          buttonColor,
-          userId: 1, // Replace with actual user ID
-          isLarge, // Include the isLarge variable
-        }),
-      });
-    }
+    // If a quiz ID exists, update the existing quiz
+    const response = await fetch(`/api/quizzes`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isLarge, // Only send isLarge
+        quizID,
+      }),
+    });
 
     const result = await response.json();
 
@@ -67,18 +48,7 @@ const handleQuizSubmit = async (e) => {
       console.error(result.error);
       alert("Failed to save quiz: " + result.error);
     } else {
-      // If a new quiz was created, save its ID
-      if (!quizID) {
-        const newQuizID = result[0]?.QuizID; // Assuming this is the structure
-        if (newQuizID) {
-          localStorage.setItem("QuizID", newQuizID);
-          alert("Quiz created successfully! Quiz ID: " + newQuizID);
-        } else {
-          console.error("QuizID not found in response.");
-        }
-      } else {
-        alert("Quiz updated successfully!");
-      }
+      alert("Quiz updated successfully!");
     }
   } catch (error) {
     console.error("Error:", error);
