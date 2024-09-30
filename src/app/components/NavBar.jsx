@@ -22,37 +22,62 @@ const handleQuizSubmit = async (e) => {
   const layout = localStorage.getItem("layout") || "stacked";
   const backgroundColor = localStorage.getItem("backgroundColor") || "white";
   const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
-  const isLarge = localStorage.getItem("isLarge") || false;
+  const isLarge = localStorage.getItem("isLarge") === "true"; // Ensure it's a boolean
+
+  // Check if a quiz ID exists in local storage
+  const quizID = localStorage.getItem("QuizID");
 
   try {
-    const response = await fetch("/api/quizzes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        layout,
-        backgroundColor,
-        buttonColor,
-        userId: 1, // Replace with actual user ID
-        isLarge, // Include the islarge variable
-      }),
-    });
+    let response;
+
+    if (quizID) {
+      // If a quiz ID exists, update the existing quiz
+      response = await fetch(`/api/quizzes/${quizID}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          layout,
+          backgroundColor,
+          buttonColor,
+          isLarge,
+        }),
+      });
+    } else {
+      // If no quiz ID, create a new quiz
+      response = await fetch("/api/quizzes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          layout,
+          backgroundColor,
+          buttonColor,
+          userId: 1, // Replace with actual user ID
+          isLarge, // Include the isLarge variable
+        }),
+      });
+    }
 
     const result = await response.json();
 
     if (result.error) {
       console.error(result.error);
-      alert("Failed to create quiz: " + result.error);
+      alert("Failed to save quiz: " + result.error);
     } else {
-      const quizID = result[0]?.QuizID; // Assuming this is the structure
-
-      // Save QuizID to localStorage
-      if (quizID) {
-        localStorage.setItem("QuizID", quizID);
-        alert("Quiz created successfully! Quiz ID: " + quizID);
+      // If a new quiz was created, save its ID
+      if (!quizID) {
+        const newQuizID = result[0]?.QuizID; // Assuming this is the structure
+        if (newQuizID) {
+          localStorage.setItem("QuizID", newQuizID);
+          alert("Quiz created successfully! Quiz ID: " + newQuizID);
+        } else {
+          console.error("QuizID not found in response.");
+        }
       } else {
-        console.error("QuizID not found in response.");
+        alert("Quiz updated successfully!");
       }
     }
   } catch (error) {
@@ -86,7 +111,6 @@ const NavBar = () => {
           {/* Loop through tab data and render button each button */}
           {tabsData.map((tab, index) => {
             return (
-              // Changes the link for the tabs
               <Link href={tab.links} key={index} className="w-full">
                 <button
                   className={`w-full py-2 text-lg transition-colors duration-300 text-black
@@ -99,7 +123,6 @@ const NavBar = () => {
                     borderTopLeftRadius: "1rem",
                     borderTopRightRadius: "1rem",
                   }}
-                  // Change the active tab on click.
                   onClick={() => setActiveTabIndex(index)}
                 >
                   {tab.label}

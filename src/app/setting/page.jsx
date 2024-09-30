@@ -182,7 +182,6 @@ export default function EditorPage() {
         console.error(result.error);
       } else {
         alert("Questions created successfully!");
-        setTemplates([]); // Optionally reset the form or state
       }
     } catch (error) {
       console.error("Error:", error);
