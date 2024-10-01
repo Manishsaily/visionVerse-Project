@@ -91,14 +91,22 @@ export default function EditorPage() {
   };
 
   const addNewTemplate = () => {
-    setTemplates([
-      ...templates,
-      {
-        question: "What is the Question?",
-        answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
-        imageUrl: "",
-      },
-    ]);
+    setTemplates((prevTemplates) => {
+      const newTemplates = [
+        ...prevTemplates,
+        {
+          question: "What is the Question?",
+          answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
+          imageUrl: "",
+        },
+      ];
+      // Update counts to match the new templates
+      setCounts((prevCounts) => [
+        ...prevCounts,
+        Array(4).fill(0), // Add a new count array for the new template
+      ]);
+      return newTemplates;
+    });
   };
 
   const handleImageUpload = (index, event) => {
@@ -118,13 +126,19 @@ export default function EditorPage() {
   };
 
   const removeTemplate = (templateIndex) => {
-    const newTemplates = [...templates];
-    newTemplates.splice(templateIndex, 1);
-    setTemplates(newTemplates);
-  };
+    setTemplates((prevTemplates) => {
+      const newTemplates = [...prevTemplates];
+      newTemplates.splice(templateIndex, 1);
 
-  const toggleSize = () => {
-    setIsBig(!islarge);
+      // Update counts accordingly
+      setCounts((prevCounts) => {
+        const newCounts = [...prevCounts];
+        newCounts.splice(templateIndex, 1); // Remove the corresponding counts
+        return newCounts;
+      });
+
+      return newTemplates;
+    });
   };
 
   // Reset Functionality
@@ -136,6 +150,7 @@ export default function EditorPage() {
     localStorage.removeItem("backgroundColor");
     localStorage.removeItem("isLarge");
     localStorage.removeItem("QuizID");
+    setCounts([Array(4).fill(0)]);
 
     // Reset state to default values
     setTemplates([
@@ -216,6 +231,10 @@ export default function EditorPage() {
     }
   });
 
+  const toggleSize = () => {
+    setIsBig(!islarge);
+  };
+
   // Add a state to track counts for each answer
   const [counts, setCounts] = useState(() => {
     return templates.map(() => Array(4).fill(0)); // Initialize counters to 0 for each answer
@@ -267,7 +286,6 @@ export default function EditorPage() {
                   type="button" // Ensure this is a button element
                   onClick={() => {
                     addNewTemplate();
-                    addNumber();
                   }}
                 >
                   <AiOutlinePlus size={20} />
