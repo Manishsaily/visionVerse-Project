@@ -113,12 +113,14 @@ export default function TemplatePage() {
       {/* Editor Controls */}
       <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
         {/* Layout Selector */}
-        <h1 className="text-2xl font-bold mb-4">Change the Question Layout</h1>
+        <h1 className="text-2xl font-bold mb-4 text-black">
+          Change the Question Layout
+        </h1>
 
-        <div className="mb-4 flex gap-2">
+        <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => handleLayoutChange("stacked")}
-            className={`py-2 px-4 rounded-full flex items-center gap-2 ${
+            className={`py-2 px-4 rounded-lg flex items-center gap-2 h-20 ${
               layout === "stacked"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-300 text-black"
@@ -130,7 +132,7 @@ export default function TemplatePage() {
 
           <button
             onClick={() => handleLayoutChange("corner")}
-            className={`py-2 px-4 rounded-full flex items-center gap-2 ${
+            className={`py-2 px-4 rounded-lg flex items-center gap-2 h-20 ${
               layout === "corner"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-300 text-black"
@@ -141,7 +143,7 @@ export default function TemplatePage() {
           </button>
           <button
             onClick={(e) => handleSubmit(e)}
-            className={`py-2 px-4 rounded-full flex items-center gap-2 ${
+            className={`py-2 px-4 rounded-full flex items-center gap-2 mt-5 ${
               layout === "corner"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-300 text-black"

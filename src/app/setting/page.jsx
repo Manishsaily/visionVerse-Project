@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
-import { FiImage, FiTrash, FiCheck, FiRefreshCw } from "react-icons/fi";
+import {
+  FiImage,
+  FiTrash,
+  FiCheck,
+  FiRefreshCw,
+  FiType,
+  FiMinus,
+  FiPlus,
+} from "react-icons/fi";
 import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
 
 export default function EditorPage() {
@@ -126,6 +134,8 @@ export default function EditorPage() {
     localStorage.removeItem("layout");
     localStorage.removeItem("buttonColor");
     localStorage.removeItem("backgroundColor");
+    localStorage.removeItem("isLarge");
+    localStorage.removeItem("QuizID");
 
     // Reset state to default values
     setTemplates([
@@ -206,18 +216,29 @@ export default function EditorPage() {
     }
   });
 
-  {
-    /* Progress Counter Array */
-  }
-  const [countNumbers, setCountNumbers] = useState([]);
-  const addNumber = () => {
-    const newCountNumber = countNumbers[countNumbers.length - 1] + 1;
-    setCountNumbers([...countNumbers, newCountNumber]);
-    console.log(addNumber);
+  // Add a state to track counts for each answer
+  const [counts, setCounts] = useState(() => {
+    return templates.map(() => Array(4).fill(0)); // Initialize counters to 0 for each answer
+  });
+
+  // Function to increment the counter
+  const incrementCount = (templateIndex, answerIndex) => {
+    const newCounts = [...counts];
+    newCounts[templateIndex][answerIndex] += 1;
+    setCounts(newCounts);
+  };
+
+  // Function to decrement the counter
+  const decrementCount = (templateIndex, answerIndex) => {
+    const newCounts = [...counts];
+    if (newCounts[templateIndex][answerIndex] > 0) {
+      newCounts[templateIndex][answerIndex] -= 1;
+    }
+    setCounts(newCounts);
   };
 
   return (
-    <div className="flex min-h-full bg-gray-100">
+    <div className="flex min-h-full bg-gray-100 text-black">
       {/* Editor Controls */}
       <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
         <form onSubmit={handleSubmit}>
@@ -233,94 +254,124 @@ export default function EditorPage() {
               {islarge ? "Text Large" : "Text Small"}
             </button>
           </div>
-
-          {/* Image URL Inputs */}
-          {templates.map((template, index) => (
-            <div key={index} className="mb-4">
-              <h1>Select a header image:</h1>
-              <div className="flex items-center mb-2 mr-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <FiImage />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(index, e)}
-                    className="border rounded-full p-2 w-full"
-                  />
-                </label>
-
-                {template.imageUrl && (
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  >
-                    <FiTrash />
-                    Remove Image
-                  </button>
-                )}
-              </div>
-
-              {template.imageUrl && (
-                <img
-                  src={template.imageUrl}
-                  alt={`Uploaded Preview ${index}`}
-                  className="w-full h-32 object-cover rounded-lg mb-2"
-                />
-              )}
-            </div>
-          ))}
-
-          <div className="mb-4 text-black">
-            {templates.map((template, templateIndex) => (
-              <div key={templateIndex} className="mb-6">
-                <input
-                  type="text"
-                  value={template.question}
-                  onChange={(userChange) =>
-                    handleQuestionChange(templateIndex, userChange)
-                  }
-                  className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
-                  placeholder={`Question ${templateIndex + 1}`}
-                />
-
-                {template.answers.map((answer, answerIndex) => (
-                  <input
-                    key={answerIndex}
-                    type="text"
-                    value={answer}
-                    onChange={(userChange) =>
-                      handleAnswerChange(templateIndex, answerIndex, userChange)
-                    }
-                    className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
-                    placeholder={`Answer ${answerIndex + 1}`}
-                  />
-                ))}
-
+          {/* Questions and Image Uploads */}
+          {templates.map((template, templateIndex) => (
+            <div
+              key={templateIndex}
+              className="flex mb-6 bg-white rounded-lg shadow-md"
+            >
+              <div className="mr-5 bg-gray-200 p-5 flex flex-col space-y-2">
+                {" "}
+                {/* Use flex-col for vertical stacking */}
+                <button
+                  type="button" // Ensure this is a button element
+                  onClick={() => {
+                    addNewTemplate();
+                    addNumber();
+                  }}
+                >
+                  <AiOutlinePlus size={20} />
+                </button>
                 <button
                   type="button"
                   onClick={() => removeTemplate(templateIndex)}
-                  className="bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="pt-4"
                 >
-                  <FiTrash />
-                  Remove Question
+                  <FiTrash size={20} />
                 </button>
               </div>
-            ))}
 
-            <button
-              type="button"
-              onClick={() => {
-                addNewTemplate();
-                addNumber();
-              }}
-              className="bg-green-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
-            >
-              <AiOutlinePlus />
-              Add Question
-            </button>
-          </div>
+              {/* Template Content */}
+              <div className="flex-1 m-3">
+                {/* Question Input */}
+                <div className="flex items-center">
+                  <FiType />
+                  <input
+                    type="text"
+                    value={template.question}
+                    onChange={(userChange) =>
+                      handleQuestionChange(templateIndex, userChange)
+                    }
+                    className="w-full mb-2 text-xl p-3 border border-gray-300 rounded-full shadow-sm ml-2"
+                    placeholder={`Question ${templateIndex + 1}`}
+                  />
+                </div>
 
+                {/* Image Upload Section */}
+                <h1>Select a header image:</h1>
+                <div className="flex items-center mb-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <FiImage />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(templateIndex, e)}
+                      className="border rounded-full p-2 w-full"
+                    />
+                  </label>
+
+                  {template.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => removeImage(templateIndex)}
+                      className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    >
+                      <FiTrash />
+                      Remove Image
+                    </button>
+                  )}
+                </div>
+
+                {template.imageUrl && (
+                  <img
+                    src={template.imageUrl}
+                    alt={`Uploaded Preview ${templateIndex}`}
+                    className="w-full h-32 object-cover rounded-lg mb-2"
+                  />
+                )}
+
+                {/* Answer Inputs */}
+                {template.answers.map((answer, answerIndex) => (
+                  <div key={answerIndex} className="flex items-center mb-2">
+                    <input
+                      type="text"
+                      value={answer}
+                      onChange={(userChange) =>
+                        handleAnswerChange(
+                          templateIndex,
+                          answerIndex,
+                          userChange
+                        )
+                      }
+                      className="flex-1 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
+                      placeholder={`Answer ${answerIndex + 1}`}
+                    />
+                    <div className="flex items-center ml-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          decrementCount(templateIndex, answerIndex)
+                        }
+                      >
+                        <FiMinus />
+                      </button>
+                      <span className="mx-2">
+                        {counts[templateIndex][answerIndex]}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          incrementCount(templateIndex, answerIndex)
+                        }
+                      >
+                        <FiPlus />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
           <button
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -328,7 +379,6 @@ export default function EditorPage() {
             <FiCheck />
             Submit Questions
           </button>
-
           {/* Reset Button */}
           <button
             type="button"
