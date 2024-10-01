@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import TemplatePreview from "../components/TemplatePreview";
 
 const MyQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -35,45 +36,28 @@ const MyQuizzes = () => {
   }, [userId]);
 
   return (
-    <div>
-      <h2>My Quizzes</h2>
-      <ul>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">My Quiz</h2>
+      <div className="grid grid-cols-1 gap-4">
         {quizzes.map((quiz) => (
-          <li key={quiz.QuizID} style={{ color: "black" }}>
-            <br />
-            <h3 style={{ color: "black" }}>{quiz.Layout}</h3>
-            <h3 style={{ color: "black" }}>{quiz.BackgroundColor}</h3>
-            <h3 style={{ color: "black" }}>{quiz.ButtonColor}</h3>
-            <h3 style={{ color: "black" }}>
-              {quiz.IsLarge !== null && quiz.IsLarge !== undefined
-                ? quiz.IsLarge.toString()
-                : "N/A"}
-            </h3>
-            <p style={{ color: "black" }}>
-              Created on: {new Date(quiz.DateCreated).toLocaleDateString()}
-            </p>
-            <h4 style={{ color: "black" }}>Questions:</h4>
-            <ul>
-              {Array.isArray(quiz.Questions) && quiz.Questions.length > 0 ? (
-                quiz.Questions.map((question) => (
-                  <li key={question.QuestionID} style={{ color: "black" }}>
-                    <p style={{ color: "black" }}>{question.QuestionText}</p>
-                    <p style={{ color: "black" }}>
-                      Answers: {question.Answers.join(", ")}
-                    </p>
-                  </li>
-                ))
-              ) : (
-                <p style={{ color: "black" }}>
-                  No questions available for this quiz.
-                </p>
-              )}
-            </ul>
-          </li>
+          <div key={quiz.QuizID} className="border p-4 rounded-lg bg-white">
+            {/* Iterate through each question in the quiz */}
+            {quiz.Questions.map((question) => (
+              <TemplatePreview
+                key={question.QuestionID}
+                questions={[question.QuestionText]} // Pass individual question text
+                answers={question.Answers} // Pass corresponding answers for each question
+                layout={quiz.Layout} 
+                buttonColor={quiz.ButtonColor} 
+                backgroundColor={quiz.BackgroundColor} 
+              />
+            ))}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
 
 export default MyQuizzes;
+
