@@ -155,7 +155,7 @@ export default function TemplatePage() {
       </div>
 
       {/* Template Preview */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 flex justify-center items-center">
         {templates.map((template, index) => (
           <div key={index} className="mb-6">
             <TemplatePreview

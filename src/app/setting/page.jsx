@@ -2,16 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
-import {
-  FiImage,
-  FiTrash,
-  FiCheck,
-  FiRefreshCw,
-  FiType,
-  FiMinus,
-  FiPlus,
-} from "react-icons/fi";
+import { FiImage, FiTrash, FiCheck, FiRefreshCw, FiType } from "react-icons/fi";
 import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
+import Link from "next/link";
 
 export default function EditorPage() {
   const [templates, setTemplates] = useState(() => {
@@ -38,6 +31,7 @@ export default function EditorPage() {
     }
   });
 
+  const [activeTemplateIndex, setActiveTemplateIndex] = useState(0);
   const [islarge, setIsBig] = useState(false);
   useEffect(() => {
     try {
@@ -91,37 +85,29 @@ export default function EditorPage() {
   };
 
   const addNewTemplate = () => {
-    setTemplates((prevTemplates) => {
-      const newTemplates = [
-        ...prevTemplates,
-        {
-          question: "What is the Question?",
-          answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
-          imageUrl: "",
-        },
-      ];
-      // Update counts to match the new templates
-      setCounts((prevCounts) => [
-        ...prevCounts,
-        Array(4).fill(0), // Add a new count array for the new template
-      ]);
-      return newTemplates;
-    });
+    setTemplates((prevTemplates) => [
+      ...prevTemplates,
+      {
+        question: "What is the Question?",
+        answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
+        imageUrl: "",
+      },
+    ]);
   };
 
   const handleImageUpload = (index, event) => {
-    const file = event.target.files[0]; // Get the uploaded file
+    const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file); // Create a URL for the file
+      const imageUrl = URL.createObjectURL(file);
       const updatedTemplates = [...templates];
-      updatedTemplates[index].imageUrl = imageUrl; // Update the image URL
+      updatedTemplates[index].imageUrl = imageUrl;
       setTemplates(updatedTemplates);
     }
   };
 
   const removeImage = (index) => {
     const updatedTemplates = [...templates];
-    updatedTemplates[index].imageUrl = ""; // Clear the image URL
+    updatedTemplates[index].imageUrl = "";
     setTemplates(updatedTemplates);
   };
 
@@ -129,30 +115,12 @@ export default function EditorPage() {
     setTemplates((prevTemplates) => {
       const newTemplates = [...prevTemplates];
       newTemplates.splice(templateIndex, 1);
-
-      // Update counts accordingly
-      setCounts((prevCounts) => {
-        const newCounts = [...prevCounts];
-        newCounts.splice(templateIndex, 1); // Remove the corresponding counts
-        return newCounts;
-      });
-
       return newTemplates;
     });
   };
 
-  // Reset Functionality
   const resetTemplatesAndLayout = () => {
-    // Clear localStorage
     localStorage.removeItem("templates");
-    localStorage.removeItem("layout");
-    localStorage.removeItem("buttonColor");
-    localStorage.removeItem("backgroundColor");
-    localStorage.removeItem("isLarge");
-    localStorage.removeItem("QuizID");
-    setCounts([Array(4).fill(0)]);
-
-    // Reset state to default values
     setTemplates([
       {
         question: "What is the Question?",
@@ -160,14 +128,9 @@ export default function EditorPage() {
         imageUrl: "",
       },
     ]);
-
-    setLayout("stacked");
-    setIsBig(false); // Reset to small text
-    setBackgroundColor("white");
-    setButtonColor("lightblue");
+    setActiveTemplateIndex(0); // Reset to the first template
   };
 
-  // Handle submission of the questions to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -364,27 +327,6 @@ export default function EditorPage() {
                       className="flex-1 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
                       placeholder={`Answer ${answerIndex + 1}`}
                     />
-                    <div className="flex items-center ml-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          decrementCount(templateIndex, answerIndex)
-                        }
-                      >
-                        <FiMinus />
-                      </button>
-                      <span className="mx-2">
-                        {counts[templateIndex][answerIndex]}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          incrementCount(templateIndex, answerIndex)
-                        }
-                      >
-                        <FiPlus />
-                      </button>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -397,7 +339,6 @@ export default function EditorPage() {
             <FiCheck />
             Submit Questions
           </button>
-          {/* Reset Button */}
           <button
             type="button"
             onClick={resetTemplatesAndLayout}
@@ -406,24 +347,55 @@ export default function EditorPage() {
             <FiRefreshCw />
             Reset
           </button>
+          <Link href="/quizzes" passHref>
+            <button
+              type="submit"
+              className="mt-4 bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Previews
+            </button>
+          </Link>
         </form>
       </div>
 
       {/* Template Preview */}
-      <div className="flex-1 p-4">
-        {templates.map((template, index) => (
-          <div key={index} className="mb-6">
-            <TemplatePreview
-              questions={[template.question]}
-              answers={template.answers}
-              islarge={islarge}
-              layout={layout}
-              imageUrl={template.imageUrl}
-              buttonColor={buttonColor}
-              backgroundColor={backgroundColor}
-            />
-          </div>
-        ))}
+      <div className="flex-1 flex justify-center items-center">
+        {/* Active Template Preview */}
+        <TemplatePreview
+          questions={[templates[activeTemplateIndex].question]}
+          answers={templates[activeTemplateIndex].answers}
+          islarge={islarge}
+          layout={layout} // Or your desired layout
+          imageUrl={templates[activeTemplateIndex].imageUrl}
+          buttonColor={buttonColor}
+          backgroundColor={backgroundColor}
+        />
+      </div>
+
+      {/* Vertical Slideshow of Templates */}
+      <div className="flex-1 flex justify-center items-center p-4 max-w-min">
+        <div className="overflow-y-auto max-h-screen">
+          {templates.map((template, index) => (
+            <div
+              key={index}
+              className={`mb-4 cursor-pointer rounded-lg shadow-md p-2 ${
+                activeTemplateIndex === index ? "bg-blue-100" : "bg-white"
+              }`}
+              onClick={() => setActiveTemplateIndex(index)}
+            >
+              <TemplatePreview
+                questions={[template.question]}
+                answers={template.answers}
+                islarge={islarge}
+                layout={layout}
+                imageUrl={template.imageUrl}
+                buttonColor={buttonColor}
+                backgroundColor={backgroundColor}
+                size="small" // Control size with this class
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

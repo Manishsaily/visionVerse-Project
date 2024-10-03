@@ -137,7 +137,7 @@ export default function StylePage() {
       </div>
 
       {/* Template Preview */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 flex justify-center items-center">
         <TemplatePreview
           questions={["What is the Question?"]}
           answers={["Answer 1", "Answer 2", "Answer 3", "Answer 4"]}
