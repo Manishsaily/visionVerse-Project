@@ -42,7 +42,6 @@ export default function TemplatePage() {
     }
   };
 
-
   // Effect to sync layout changes across tabs
   useEffect(() => {
     const syncLayoutAcrossTabs = (event) => {
@@ -76,51 +75,7 @@ export default function TemplatePage() {
       console.error("Error accessing localStorage", error);
       return "lightblue";
     }
-    
   });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const userId = 1; // Replace with the actual user ID
-    const layout = localStorage.getItem("layout") || "stacked";
-    const backgroundColor = localStorage.getItem("backgroundColor") || "white";
-    const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
-    const isLarge = localStorage.getItem("isLarge") || false;
-    const buttonStyle = localStorage.getItem("buttonStyle") || "style1";
-
-    try {
-      const response = await fetch("/api/quizzes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          layout,
-          backgroundColor,
-          buttonColor,
-          userId,
-          isLarge,
-          buttonStyle,
-        }), // Ensure templateId is sent as an integer
-      });
-
-      const result = await response.json();
-
-      // Handle response
-      if (result.error) {
-        console.error(result.error);
-        alert("Failed to create quiz: " + result.error); // Display error
-      } else {
-        alert("Quiz created successfully!");
-        const quizID = result[0].QuizID;
-        localStorage.setItem("QuizID", quizID);
-        console.log("QuizID saved to localStorage:", quizID);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while creating the quiz."); // Display error
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -154,12 +109,6 @@ export default function TemplatePage() {
           >
             <MdViewModule />
             Corners
-          </button>
-          <button
-            onClick={(e) => handleSubmit(e)}
-            className="p-4 px-4 rounded-full flex items-center gap-2 mt-5 bg-blue-500"
-           >
-            Next
           </button>
         </div>
       </div>

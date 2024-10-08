@@ -1,5 +1,10 @@
 import React from "react";
-import { TbCircleLetterA, TbCircleLetterB, TbCircleLetterC, TbCircleLetterD } from "react-icons/tb";
+import {
+  TbCircleLetterA,
+  TbCircleLetterB,
+  TbCircleLetterC,
+  TbCircleLetterD,
+} from "react-icons/tb";
 
 export default function TemplatePreview({
   questions,
@@ -13,12 +18,13 @@ export default function TemplatePreview({
   currentTemplateIndex = 0, // Default value
   totalTemplates = 1, // Default value
 }) {
-  
   // Define the button style with the question container
   const getStyledContainer = () => {
     return (
       <div
-        className={`flex flex-col items-center gap-20 p-12 px-4 rounded-lg ${layout === 'stacked' ? '-mt-8' : ''}`} // Add margin-top for stacked layout
+        className={`flex flex-col items-center gap-20 p-12 px-4 rounded-lg ${
+          layout === "stacked" ? "-mt-8" : ""
+        }`} // Add margin-top for stacked layout
         style={{ backgroundColor: buttonColor, borderRadius: "20px" }}
       >
         <p className={`${isLarge ? "text-2xl" : "text-lg"} mb-4 text-center`}>
@@ -26,7 +32,9 @@ export default function TemplatePreview({
         </p>
         <div
           className={`flex ${
-            layout === "stacked" ? "flex-col space-y-2" : "grid grid-cols-2 gap-2"
+            layout === "stacked"
+              ? "flex-col space-y-2"
+              : "grid grid-cols-2 gap-2"
           }`}
         >
           {answers.map((answer, idx) => (
@@ -50,7 +58,15 @@ export default function TemplatePreview({
             style={{ backgroundColor: "white" }}
           >
             <span className="mr-2">
-              {index === 0 ? <TbCircleLetterA /> : index === 1 ? <TbCircleLetterB /> : index === 2 ? <TbCircleLetterC /> : <TbCircleLetterD />}
+              {index === 0 ? (
+                <TbCircleLetterA />
+              ) : index === 1 ? (
+                <TbCircleLetterB />
+              ) : index === 2 ? (
+                <TbCircleLetterC />
+              ) : (
+                <TbCircleLetterD />
+              )}
             </span>
             {answer}
           </button>
@@ -91,15 +107,20 @@ export default function TemplatePreview({
   return (
     <div>
       {/* Phone Screen Container */}
-      <div className="w-[375px] h-[800px] bg-black border rounded-[40px] ml-52 overflow-hidden">
-        <div className="h-full rounded-[40px] overflow-hidden" style={{ backgroundColor }}>
+      <div className="w-[375px] h-[800px] bg-black border rounded-[40px] overflow-hidden shadow-lg">
+        <div
+          className="h-full rounded-[40px] overflow-hidden"
+          style={{ backgroundColor }}
+        >
           {/* Progress Bar Container */}
           <div className="w-full px-4 py-2 mt-6">
             <div className="bg-gray-200 rounded-full h-6 relative">
               <div
                 className="bg-blue-600 rounded-full"
                 style={{
-                  width: `${(currentTemplateIndex + 1) / totalTemplates * 100}%`, // Dynamic width based on current question
+                  width: `${
+                    ((currentTemplateIndex + 1) / totalTemplates) * 100
+                  }%`, // Dynamic width based on current question
                   height: "100%",
                 }}
               >

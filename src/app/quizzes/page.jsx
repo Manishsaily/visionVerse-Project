@@ -1,50 +1,59 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import TemplatePreview from "../components/TemplatePreview";
+import { FiTrash, FiEdit2 } from "react-icons/fi"; // Add FiPencil here
 
 const MyQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
-  const [currentQuizIndex, setCurrentQuizIndex] = useState(0); // Track the current quiz
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Track the current question
-  const userId = 1; // Replace this with the actual user ID
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const userId = 1;
 
   // Fetch quizzes from the API
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
         const response = await fetch(`/api/quizzes?userId=${userId}`);
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
+        if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
-
-        // Debugging: Log the fetched data
         console.log("Fetched quizzes:", data);
-
-        // Check if data is valid
-        if (!data || !Array.isArray(data)) {
+        if (!data || !Array.isArray(data))
           throw new Error("Invalid data format");
-        }
-
         setQuizzes(data);
       } catch (error) {
         console.error("Error fetching quizzes:", error);
       }
     };
-
     fetchQuizzes();
   }, [userId]);
 
+  // Function to handle delete
+  const handleDelete = async (quizId) => {
+    try {
+      const response = await fetch(`/api/quizzes`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quizId }),
+      });
+      if (!response.ok) throw new Error("Failed to delete quiz");
+
+      // Remove the deleted quiz from the state
+      setQuizzes((prevQuizzes) =>
+        prevQuizzes.filter((quiz) => quiz.QuizID !== quizId)
+      );
+      console.log("Quiz deleted successfully");
+    } catch (error) {
+      console.error("Error deleting quiz:", error);
+    }
+  };
+
   // Function to handle Next
   const handleNext = () => {
+    // Check if there are more questions in the current quiz
     if (currentQuestionIndex < quizzes[currentQuizIndex].Questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    } else if (currentQuizIndex < quizzes.length - 1) {
-      // Move to the next quiz
-      setCurrentQuizIndex((prevIndex) => prevIndex + 1);
-      setCurrentQuestionIndex(0); // Reset question index to 0 for the new quiz
     }
   };
 
@@ -52,43 +61,117 @@ const MyQuizzes = () => {
   const handlePrev = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-    } else if (currentQuizIndex > 0) {
-      // Move to the previous quiz
-      setCurrentQuizIndex((prevIndex) => prevIndex - 1);
-      setCurrentQuestionIndex(quizzes[currentQuizIndex - 1].Questions.length - 1); // Go to the last question of the previous quiz
     }
   };
 
+  const handleEdit = (index) => {
+    const quiz = quizzes[index]; // Get the selected quiz
+
+    // Set the QuizID in local storage
+    localStorage.setItem("QuizID", quiz.QuizID);
+
+    // Set other quiz properties in local storage
+    localStorage.setItem("quizName", quiz.Name);
+    localStorage.setItem("isLarge", quiz.IsLarge);
+    localStorage.setItem("layout", quiz.Layout);
+    localStorage.setItem("backgroundColor", quiz.BackgroundColor);
+    localStorage.setItem("buttonColor", quiz.ButtonColor);
+    localStorage.setItem("buttonStyle", quiz.buttonStyle);
+
+    // Format questions for local storage
+    const formattedQuestions = quiz.Questions.map((question) => ({
+      question: question.QuestionText,
+      answers: question.Answers,
+      imageUrl: "", // Adjust this if you need an image URL
+    }));
+
+    // Set questions to local storage
+    localStorage.setItem("templates", JSON.stringify(formattedQuestions));
+
+    // Redirect to the setting page
+    window.location.href = "/setting";
+  };
+
+  const handleQuizSelect = (index) => {
+    setCurrentQuizIndex(index);
+    setCurrentQuestionIndex(0); // Reset to the first question of the selected quiz
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">My Quizzes</h2>
-      <div className="grid grid-cols-1 gap-4">
+    <div className="flex min-h-screen bg-gray-100 text-black">
+      {/* Sidebar for displaying "My Quizzes" */}
+      <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-4">My Quizzes</h2>
+        <ul className="space-y-2">
+          {quizzes.map((quiz, index) => (
+            <li
+              key={quiz.QuizID}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-200 bg-gray-300"
+            >
+              <button
+                onClick={() => handleEdit(index)}
+                className="p-3"
+                aria-label="Edit Quiz"
+              >
+                <FiEdit2 size={20} /> {/* Use a pencil icon here */}
+              </button>
+              <div
+                className={`flex-grow cursor-pointer text-center`}
+                onClick={() => handleQuizSelect(index)}
+              >
+                {quiz.Name} {/* Display quiz name */}
+              </div>
+
+              <button onClick={() => handleDelete(quiz.QuizID)} className="p-3">
+                <FiTrash size={20} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {/* Main content area for the selected quiz */}
+      <div className="p-6">
         {quizzes.length > 0 && (
-          <div key={quizzes[currentQuizIndex].QuizID} className="border p-4 rounded-lg bg-white">
+          <div
+            key={quizzes[currentQuizIndex].QuizID}
+            className="border p-4 rounded-lg bg-white shadow-lg"
+          >
             {/* Render the current question in the TemplatePreview */}
             <TemplatePreview
-              key={quizzes[currentQuizIndex].Questions[currentQuestionIndex].QuestionID} // Unique key for the current question
-              questions={[quizzes[currentQuizIndex].Questions[currentQuestionIndex].QuestionText]} // Pass the current question text
-              answers={quizzes[currentQuizIndex].Questions[currentQuestionIndex].Answers} // Pass corresponding answers for the current question
+              key={
+                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                  .QuestionID
+              }
+              questions={[
+                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                  .QuestionText,
+              ]}
+              answers={
+                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                  .Answers
+              }
               layout={quizzes[currentQuizIndex].Layout}
               buttonColor={quizzes[currentQuizIndex].ButtonColor}
               backgroundColor={quizzes[currentQuizIndex].BackgroundColor}
               buttonStyle={quizzes[currentQuizIndex].buttonStyle}
-              currentTemplateIndex={currentQuestionIndex} // Set appropriate index
-              totalTemplates={quizzes[currentQuizIndex].Questions.length} // Total number of questions in the current quiz
+              currentTemplateIndex={currentQuestionIndex}
+              totalTemplates={quizzes[currentQuizIndex].Questions.length}
             />
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
               <button
                 onClick={handlePrev}
-                disabled={currentQuizIndex === 0 && currentQuestionIndex === 0} // Disable if on the first question of the first quiz
+                disabled={currentQuestionIndex === 0}
                 className="px-4 py-2 bg-gray-300 rounded-lg"
               >
                 Previous
               </button>
               <button
                 onClick={handleNext}
-                disabled={currentQuizIndex === quizzes.length - 1 && currentQuestionIndex === quizzes[currentQuizIndex].Questions.length - 1} // Disable if on the last question of the last quiz
+                disabled={
+                  currentQuestionIndex ===
+                  quizzes[currentQuizIndex].Questions.length - 1
+                }
                 className="px-4 py-2 bg-gray-300 rounded-lg"
               >
                 Next

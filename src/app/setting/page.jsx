@@ -15,6 +15,8 @@ import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
 import Link from "next/link";
 
 export default function EditorPage() {
+  const [quizName, setQuizName] = useState("");
+
   const [templates, setTemplates] = useState(() => {
     try {
       const savedTemplates = localStorage.getItem("templates");
@@ -38,8 +40,10 @@ export default function EditorPage() {
       ];
     }
   });
-  
-  const [totalTemplates, setTotalTemplates] = useState(templates.length > 7 ? 7 : templates.length);
+
+  const [totalTemplates, setTotalTemplates] = useState(
+    templates.length > 7 ? 7 : templates.length
+  );
   const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
   const [progressDisplay, setProgressDisplay] = useState("No Questions");
 
@@ -105,9 +109,10 @@ export default function EditorPage() {
   };
 
   useEffect(() => {
-    setProgressDisplay(totalTemplates > 0 
-      ? `Question ${currentTemplateIndex + 1} / ${totalTemplates}` 
-      : "No Questions"
+    setProgressDisplay(
+      totalTemplates > 0
+        ? `Question ${currentTemplateIndex + 1} / ${totalTemplates}`
+        : "No Questions"
     );
   }, [templates, currentTemplateIndex, totalTemplates]);
 
@@ -117,7 +122,7 @@ export default function EditorPage() {
         alert("You can only add up to 7 questions.");
         return prevTemplates; // Return without adding if already 7 templates
       }
-      
+
       const newTemplates = [
         ...prevTemplates,
         {
@@ -126,24 +131,28 @@ export default function EditorPage() {
           imageUrl: "",
         },
       ];
-  
+
       // Update counts for the new template
       setCounts((prevCounts) => [
         ...prevCounts,
         Array(4).fill(0), // Initialize counts for new answers
       ]);
-  
+
       // Update totalTemplates if less than 7
-      const updatedTotalTemplates = newTemplates.length > 7 ? 7 : newTemplates.length;
+      const updatedTotalTemplates =
+        newTemplates.length > 7 ? 7 : newTemplates.length;
       setTotalTemplates(updatedTotalTemplates); // Correct way to update state
-  
+
       // Update the progress display
-      setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`);
-      setCurrentTemplateIndex((prevIndex) => Math.min(prevIndex + 1, totalTemplates - 1));
+      setProgressDisplay(
+        `Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`
+      );
+      setCurrentTemplateIndex((prevIndex) =>
+        Math.min(prevIndex + 1, totalTemplates - 1)
+      );
       return newTemplates;
     });
   };
-
 
   const handleImageUpload = (index, event) => {
     const file = event.target.files[0]; // Get the uploaded file
@@ -164,33 +173,35 @@ export default function EditorPage() {
   const removeTemplate = (templateIndex) => {
     setTemplates((prevTemplates) => {
       if (prevTemplates.length === 0) return prevTemplates; // No templates to remove
-  
+
       const newTemplates = [...prevTemplates];
       newTemplates.splice(templateIndex, 1);
-  
+
       // Update counts accordingly
       setCounts((prevCounts) => {
         const newCounts = [...prevCounts];
         newCounts.splice(templateIndex, 1); // Remove corresponding counts
         return newCounts;
       });
-  
+
       // Update totalTemplates using setTotalTemplates
-      const updatedTotalTemplates = newTemplates.length > 7 ? 7 : newTemplates.length;
+      const updatedTotalTemplates =
+        newTemplates.length > 7 ? 7 : newTemplates.length;
       setTotalTemplates(updatedTotalTemplates); // Use the setter function to update state
-  
+
       // Handle edge case when the current template is removed
       if (currentTemplateIndex >= updatedTotalTemplates) {
         setCurrentTemplateIndex(updatedTotalTemplates - 1); // Move to the last available template
       }
-  
+
       // Update progress display
-      setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`);
-  
+      setProgressDisplay(
+        `Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`
+      );
+
       return newTemplates;
     });
   };
-  
 
   // Reset Functionality
   const resetTemplatesAndLayout = () => {
@@ -201,6 +212,7 @@ export default function EditorPage() {
     localStorage.removeItem("backgroundColor");
     localStorage.removeItem("isLarge");
     localStorage.removeItem("QuizID");
+    localStorage.removeItem("quizName");
     setCounts([Array(4).fill(0)]);
 
     // Reset state to default values
@@ -221,49 +233,82 @@ export default function EditorPage() {
     setProgressDisplay(`Question 1 of 1`);
   };
 
-  // Handle submission of the questions to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userId = 1; // Replace with the actual user ID
+    const layout = localStorage.getItem("layout") || "stacked";
+    const backgroundColor = localStorage.getItem("backgroundColor") || "white";
+    const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
+    const isLarge = localStorage.getItem("isLarge") || false;
+    const buttonStyle = localStorage.getItem("buttonStyle") || "style1";
+    const quizName = localStorage.getItem("quizName") || "Quiz Name";
 
-    const quizId = localStorage.getItem("QuizID"); // Retrieve the Quiz ID from local storage
-
-    if (!quizId) {
-      alert("Quiz ID is required to submit questions.");
-      return;
-    }
-
-    const questionsToSubmit = templates
-      .map((template) => ({
-        questionText: template.question.trim() || "Default Question",
-        answers: template.answers.map(
-          (answer) => answer.trim() || "Default Answer"
-        ),
-        quizId: parseInt(quizId, 10), // Ensure quizId is an integer
-      }))
-      .filter((q) => q.questionText);
-
-    if (questionsToSubmit.length === 0) {
-      alert("No valid questions to submit.");
-      return;
-    }
-
+    // Step 1: Create the quiz
     try {
-      const response = await fetch("/api/questions", {
+      const response = await fetch("/api/quizzes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(questionsToSubmit), // Send the whole array
+        body: JSON.stringify({
+          quizName,
+          layout,
+          backgroundColor,
+          buttonColor,
+          userId,
+          isLarge,
+          buttonStyle,
+        }),
       });
 
       const result = await response.json();
+
+      // Handle quiz creation response
       if (result.error) {
         console.error(result.error);
+        alert("Failed to create quiz: " + result.error);
+        return; // Exit if quiz creation fails
+      }
+
+      const quizID = result[0].QuizID;
+      localStorage.setItem("QuizID", quizID);
+      console.log("QuizID saved to localStorage:", quizID);
+
+      // Step 2: Prepare and submit the questions
+      const questionsToSubmit = templates
+        .map((template) => ({
+          questionText: template.question.trim() || "Default Question",
+          answers: template.answers.map(
+            (answer) => answer.trim() || "Default Answer"
+          ),
+          quizId: parseInt(quizID, 10),
+        }))
+        .filter((q) => q.questionText);
+
+      if (questionsToSubmit.length === 0) {
+        alert("No valid questions to submit.");
+        return;
+      }
+
+      const questionsResponse = await fetch("/api/questions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(questionsToSubmit),
+      });
+
+      const questionsResult = await questionsResponse.json();
+
+      if (questionsResult.error) {
+        console.error(questionsResult.error);
+        alert("Failed to create questions: " + questionsResult.error);
       } else {
-        alert("Questions created successfully!");
+        alert("Quiz and questions created successfully!");
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("An error occurred while creating the quiz and questions.");
     }
   };
 
@@ -284,6 +329,14 @@ export default function EditorPage() {
       return "lightblue";
     }
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("quizName", quizName);
+    } catch (error) {
+      console.error("Error setting quizName in localStorage", error);
+    }
+  }, [quizName]);
 
   const toggleSize = () => {
     setIsBig(!islarge);
@@ -312,24 +365,30 @@ export default function EditorPage() {
 
   useEffect(() => {
     setTotalTemplates(templates.length);
-    setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${totalTemplates}`);
+    setProgressDisplay(
+      `Question ${currentTemplateIndex + 1} of ${totalTemplates}`
+    );
   }, [templates, currentTemplateIndex]);
 
   const TemplatePreviewSmall = ({ template, onClick, isActive }) => {
     return (
-      <div 
-        className={`p-2 border rounded-lg mb-2 cursor-pointer hover:shadow-lg ${isActive ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`} 
+      <div
+        className={`p-2 border rounded-lg mb-2 cursor-pointer hover:shadow-lg ${
+          isActive ? "border-blue-500 bg-blue-100" : "border-gray-300"
+        }`}
         onClick={onClick}
-        style={{ 
-          backgroundColor: isActive ? 'rgba(173, 216, 230, 0.5)' : 'rgba(255, 255, 255, 0.9)', // Highlight background for active
+        style={{
+          backgroundColor: isActive
+            ? "rgba(173, 216, 230, 0.5)"
+            : "rgba(255, 255, 255, 0.9)", // Highlight background for active
         }}
       >
         <div className="flex flex-col">
           {template.imageUrl && (
-            <img 
-              src={template.imageUrl} 
-              alt="thumbnail" 
-              className="w-16 h-16 object-cover mb-2 rounded-md" 
+            <img
+              src={template.imageUrl}
+              alt="thumbnail"
+              className="w-16 h-16 object-cover mb-2 rounded-md"
             />
           )}
           <p className="text-sm font-semibold">{template.question}</p>
@@ -337,7 +396,6 @@ export default function EditorPage() {
       </div>
     );
   };
-  
 
   return (
     <div className="flex min-h-full bg-gray-100 text-black">
@@ -355,6 +413,13 @@ export default function EditorPage() {
               <AiOutlineQuestionCircle />
               {islarge ? "Text Large" : "Text Small"}
             </button>
+            <input
+              type="text"
+              value={quizName}
+              onChange={(e) => setQuizName(e.target.value)}
+              className="border border-gray-300 p-2 rounded ml-4"
+              placeholder="Quiz Name"
+            />
           </div>
           {/* Questions and Image Uploads */}
           {templates.map((template, templateIndex) => (
@@ -445,29 +510,6 @@ export default function EditorPage() {
                       className="flex-1 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
                       placeholder={`Answer ${answerIndex + 1}`}
                     />
-                    <div className="flex items-center ml-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          decrementCount(templateIndex, answerIndex)
-                        }
-                      >
-                        <FiMinus />
-                      </button>
-                      <span className="mx-2">
-                      {counts[templateIndex] && counts[templateIndex][answerIndex] !== undefined 
-                        ? counts[templateIndex][answerIndex] 
-                        : 0} {/* Default to 0 if not defined */}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          incrementCount(templateIndex, answerIndex)
-                        }
-                      >
-                        <FiPlus />
-                      </button>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -511,8 +553,8 @@ export default function EditorPage() {
               layout={layout}
               buttonColor={buttonColor}
               backgroundColor={backgroundColor}
-              questions={[templates[currentTemplateIndex].question]} 
-              answers={templates[currentTemplateIndex].answers} 
+              questions={[templates[currentTemplateIndex].question]}
+              answers={templates[currentTemplateIndex].answers}
               buttonStyle={buttonStyle}
               totalTemplates={totalTemplates}
               currentTemplateIndex={currentTemplateIndex}
@@ -537,3 +579,35 @@ export default function EditorPage() {
     </div>
   );
 }
+
+const handleEdit = async (quizId) => {
+  localStorage.setItem("QuizID", quizId);
+  try {
+    const response = await fetch(`/api/quizzes/${quizId}`); // Adjust the endpoint as needed
+    if (!response.ok) throw new Error("Failed to fetch quiz data");
+    const quizData = await response.json();
+
+    // Set quiz properties to local storage
+    localStorage.setItem("quizName", quizData.Name);
+    localStorage.setItem("isLarge", quizData.IsLarge);
+    localStorage.setItem("layout", quizData.Layout);
+    localStorage.setItem("backgroundColor", quizData.BackgroundColor);
+    localStorage.setItem("buttonColor", quizData.ButtonColor);
+    localStorage.setItem("buttonStyle", quizData.buttonStyle);
+
+    // Structure questions for local storage
+    const formattedQuestions = quizData.Questions.map((question) => ({
+      question: question.QuestionText,
+      answers: question.Answers,
+      imageUrl: "", // Set this based on your requirements, if applicable
+    }));
+
+    // Set questions to local storage
+    localStorage.setItem("templates", JSON.stringify(formattedQuestions));
+
+    // Redirect to the setting page
+    window.location.href = "/setting";
+  } catch (error) {
+    console.error("Error fetching quiz data:", error);
+  }
+};
