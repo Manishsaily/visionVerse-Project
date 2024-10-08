@@ -18,6 +18,7 @@ CREATE TABLE "Quiz" (
   "TemplateID" integer NOT NULL,
   "Layout" text,
   "IsLarge" boolean,
+  "buttonStyle" text NOT NULL,
   CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID"),
   CONSTRAINT "Quiz_User_UserID_fkey"
     FOREIGN KEY ("User_UserID") REFERENCES "User" ("UserID")

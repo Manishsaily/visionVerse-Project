@@ -29,6 +29,7 @@ export async function GET(request) {
                 ButtonColor
                 DateCreated
                 IsLarge
+                buttonStyle
               }
             }
           `,
@@ -101,7 +102,7 @@ export async function GET(request) {
 
 // Handle POST requests
 export async function POST(request) {
-  const { layout, backgroundColor, buttonColor, userId, isLarge } =
+  const { layout, backgroundColor, buttonColor, userId, isLarge, buttonStyle } =
     await request.json();
 
   // Get the current date in ISO format (YYYY-MM-DD)
@@ -109,13 +110,14 @@ export async function POST(request) {
 
   const payload = {
     query: `
-      mutation InsertQuiz($layout: String!, $backgroundColor: String, $buttonColor: String, $userId: Int!, $dateCreated: date!, $isLarge: Boolean!) {
+      mutation InsertQuiz($layout: String!, $backgroundColor: String, $buttonColor: String, $userId: Int!, $dateCreated: date!, $isLarge: Boolean!, $buttonStyle: String!) {
         insert_Quiz(objects: {
           Layout: $layout,
           BackgroundColor: $backgroundColor,
           ButtonColor: $buttonColor,
           User_UserID: $userId,
           IsLarge: $isLarge,
+          buttonStyle: $buttonStyle
           DateCreated: $dateCreated
         }) {
           returning {
@@ -131,6 +133,7 @@ export async function POST(request) {
       buttonColor,
       userId: parseInt(userId, 10),
       isLarge,
+      buttonStyle,
       dateCreated, // Use the date-only string
     },
   };

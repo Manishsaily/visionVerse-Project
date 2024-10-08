@@ -22,15 +22,26 @@ export default function TemplatePage() {
     }
   });
 
+  // Initialize buttonStyle state with localStorage or default to 'style1'
+  const [buttonStyle] = useState(() => {
+    try {
+      return localStorage.getItem("buttonStyle") || "style1";
+    } catch (error) {
+      console.error("Error accessing localStorage", error);
+      return "style1";
+    }
+  });
+
   // Handle layout change and update both state and localStorage
   const handleLayoutChange = (newLayout) => {
     setLayout(newLayout);
     try {
       localStorage.setItem("layout", newLayout);
     } catch (error) {
-      console.error("Error setting localStorage", error);
+      console.error("Error setting layout in localStorage", error);
     }
   };
+
 
   // Effect to sync layout changes across tabs
   useEffect(() => {
@@ -65,6 +76,7 @@ export default function TemplatePage() {
       console.error("Error accessing localStorage", error);
       return "lightblue";
     }
+    
   });
 
   const handleSubmit = async (e) => {
@@ -74,6 +86,7 @@ export default function TemplatePage() {
     const backgroundColor = localStorage.getItem("backgroundColor") || "white";
     const buttonColor = localStorage.getItem("buttonColor") || "lightblue";
     const isLarge = localStorage.getItem("isLarge") || false;
+    const buttonStyle = localStorage.getItem("buttonStyle") || "style1";
 
     try {
       const response = await fetch("/api/quizzes", {
@@ -87,6 +100,7 @@ export default function TemplatePage() {
           buttonColor,
           userId,
           isLarge,
+          buttonStyle,
         }), // Ensure templateId is sent as an integer
       });
 
@@ -143,19 +157,15 @@ export default function TemplatePage() {
           </button>
           <button
             onClick={(e) => handleSubmit(e)}
-            className={`py-2 px-4 rounded-full flex items-center gap-2 mt-5 ${
-              layout === "corner"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-black"
-            } hover:bg-blue-400 transition duration-200 ease-in-out`}
-          >
+            className="p-4 px-4 rounded-full flex items-center gap-2 mt-5 bg-blue-500"
+           >
             Next
           </button>
         </div>
       </div>
 
       {/* Template Preview */}
-      <div className="flex-1 flex justify-center items-center">
+      <div className="flex ml-52 p-4">
         {templates.map((template, index) => (
           <div key={index} className="mb-6">
             <TemplatePreview
@@ -164,6 +174,7 @@ export default function TemplatePage() {
               layout={layout} // Pass layout to TemplatePreview
               buttonColor={buttonColor}
               backgroundColor={backgroundColor}
+              buttonStyle={buttonStyle} // Pass buttonStyle to TemplatePreview
             />
           </div>
         ))}

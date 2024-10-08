@@ -1,4 +1,5 @@
 import React from "react";
+import { TbCircleLetterA, TbCircleLetterB, TbCircleLetterC, TbCircleLetterD } from "react-icons/tb";
 
 export default function TemplatePreview({
   questions,
@@ -8,73 +9,111 @@ export default function TemplatePreview({
   imageUrl,
   buttonColor,
   backgroundColor,
-  size = "large", // New size prop with default value
+  buttonStyle,
+  currentTemplateIndex = 0, // Default value
+  totalTemplates = 1, // Default value
 }) {
-  // Determine size classes and dimensions based on the size prop
-  const textSize = size === "small" ? "text-xs" : "text-2xl";
-  const answerSize =
-    size === "small" ? "py-1 px-2 text-xs" : "py-2 px-4 text-lg";
-  const borderRadius = size === "small" ? "rounded-md" : "rounded-[40px]"; // Adjusted for small size
-  const templateDimensions =
-    size === "small" ? "w-[100px] h-[200px]" : "w-[375px] h-[812px]";
-  const marginTop = size === "small" ? "mt-1" : "mt-4";
+  
+  // Define the button style with the question container
+  const getStyledContainer = () => {
+    return (
+      <div
+        className={`flex flex-col items-center gap-20 p-12 px-4 rounded-lg ${layout === 'stacked' ? '-mt-8' : ''}`} // Add margin-top for stacked layout
+        style={{ backgroundColor: buttonColor, borderRadius: "20px" }}
+      >
+        <p className={`${isLarge ? "text-2xl" : "text-lg"} mb-4 text-center`}>
+          {questions}
+        </p>
+        <div
+          className={`flex ${
+            layout === "stacked" ? "flex-col space-y-2" : "grid grid-cols-2 gap-2"
+          }`}
+        >
+          {answers.map((answer, idx) => (
+            <div className={layout === "corner" ? "w-full" : ""} key={idx}>
+              {getButtonStyle(answer, idx, layout)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Define different button styles
+  const getButtonStyle = (answer, index) => {
+    switch (buttonStyle) {
+      case "style1":
+        return (
+          <button
+            key={index}
+            className="flex items-center justify-start py-4 px-2 rounded-full border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
+            style={{ backgroundColor: "white" }}
+          >
+            <span className="mr-2">
+              {index === 0 ? <TbCircleLetterA /> : index === 1 ? <TbCircleLetterB /> : index === 2 ? <TbCircleLetterC /> : <TbCircleLetterD />}
+            </span>
+            {answer}
+          </button>
+        );
+      case "style2":
+        return (
+          <button
+            key={index}
+            className="py-4 px-6 rounded-lg border-2 border-white focus:outline-none focus:ring-2 text-lg text-black"
+            style={{ backgroundColor: "lightgray" }}
+          >
+            {answer}
+          </button>
+        );
+      case "style3":
+        return (
+          <button
+            key={index}
+            className="py-4 px-6 rounded-lg border-2 border-black bg-white text-black focus:outline-none focus:ring-2 text-lg"
+          >
+            {answer}
+          </button>
+        );
+      case "style4":
+        return (
+          <button
+            key={index}
+            className="py-4 px-6 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 text-lg"
+          >
+            {answer}
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className={`max-w-md`}>
+    <div>
       {/* Phone Screen Container */}
-      <div
-        className={`relative ${templateDimensions} mx-auto bg-black border ${borderRadius} overflow-hidden`}
-      >
-        {/* Notch */}
-        <div className="absolute top-0 left-0 w-full h-6 bg-black z-10"></div>
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-36 h-6 bg-gray-800 rounded-b-lg"></div>
-
-        {/* Phone Body */}
-        <div
-          className={`relative w-full h-full overflow-hidden ${borderRadius}`}
-          style={{ backgroundColor }} // Apply background color to the inner phone body
-        >
-          {/* Conditionally Render Image or Empty Box */}
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt="Quiz Image"
-              className={`w-full h-1/3 object-contain p-4 ${borderRadius}`}
-            />
-          ) : (
-            <div
-              className={`w-full h-1/3 bg-gray-200 flex items-center justify-center p-4 mt-8 ${borderRadius}`}
-            >
-              <p className="text-gray-500">No Image Available</p>
+      <div className="w-[375px] h-[800px] bg-black border rounded-[40px] ml-52 overflow-hidden">
+        <div className="h-full rounded-[40px] overflow-hidden" style={{ backgroundColor }}>
+          {/* Progress Bar Container */}
+          <div className="w-full px-4 py-2 mt-6">
+            <div className="bg-gray-200 rounded-full h-6 relative">
+              <div
+                className="bg-blue-600 rounded-full"
+                style={{
+                  width: `${(currentTemplateIndex + 1) / totalTemplates * 100}%`, // Dynamic width based on current question
+                  height: "100%",
+                }}
+              >
+                <span className="text-black text-xs font-semibold absolute left-1/2 -translate-x-1/2 top-1/2 transform -translate-y-1/2">
+                  {currentTemplateIndex + 1} of {totalTemplates}
+                </span>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Quiz Content */}
-          <div className={`p-4 ${marginTop}`}>
-            {questions.map((question, index) => (
-              <p key={index} className={`mb-4 ${textSize}`}>
-                {question}
-              </p>
-            ))}
-
-            {/* Display Answer Buttons with Different Layouts */}
-            <div
-              className={`flex ${
-                layout === "stacked" ? "flex-col space-y-2" : ""
-              } ${
-                layout === "corner" ? "grid grid-cols-2 grid-rows-2 gap-2" : ""
-              }`}
-            >
-              {answers.map((answer, index) => (
-                <button
-                  key={index}
-                  className={`text-black ${answerSize} ${borderRadius} focus:outline-none focus:ring-2 hover:bg-opacity-80`}
-                  style={{ backgroundColor: buttonColor }}
-                >
-                  {answer}
-                </button>
-              ))}
-            </div>
+          <div className={`p-8 ${imageUrl ? "mt-24" : "mt-52"}`}>
+            {/* Render styled containers for questions and answers */}
+            {getStyledContainer()}
           </div>
         </div>
       </div>

@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
-import { FiImage, FiTrash, FiCheck, FiRefreshCw, FiType } from "react-icons/fi";
+import {
+  FiImage,
+  FiTrash,
+  FiCheck,
+  FiRefreshCw,
+  FiType,
+  FiMinus,
+  FiPlus,
+} from "react-icons/fi"; //all the icons used for the editor tools
 import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
 import Link from "next/link";
 
@@ -30,8 +38,20 @@ export default function EditorPage() {
       ];
     }
   });
+  
+  const [totalTemplates, setTotalTemplates] = useState(templates.length > 7 ? 7 : templates.length);
+  const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
+  const [progressDisplay, setProgressDisplay] = useState("No Questions");
 
-  const [activeTemplateIndex, setActiveTemplateIndex] = useState(0);
+  const [buttonStyle] = useState(() => {
+    try {
+      return localStorage.getItem("buttonStyle") || "style1";
+    } catch (error) {
+      console.error("Error accessing localStorage", error);
+      return "style1";
+    }
+  });
+
   const [islarge, setIsBig] = useState(false);
   useEffect(() => {
     try {
@@ -84,43 +104,106 @@ export default function EditorPage() {
     setTemplates(newTemplates);
   };
 
+  useEffect(() => {
+    setProgressDisplay(totalTemplates > 0 
+      ? `Question ${currentTemplateIndex + 1} / ${totalTemplates}` 
+      : "No Questions"
+    );
+  }, [templates, currentTemplateIndex, totalTemplates]);
+
   const addNewTemplate = () => {
-    setTemplates((prevTemplates) => [
-      ...prevTemplates,
-      {
-        question: "What is the Question?",
-        answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
-        imageUrl: "",
-      },
-    ]);
+    setTemplates((prevTemplates) => {
+      if (prevTemplates.length >= 7) {
+        alert("You can only add up to 7 questions.");
+        return prevTemplates; // Return without adding if already 7 templates
+      }
+      
+      const newTemplates = [
+        ...prevTemplates,
+        {
+          question: "What is the Question?",
+          answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
+          imageUrl: "",
+        },
+      ];
+  
+      // Update counts for the new template
+      setCounts((prevCounts) => [
+        ...prevCounts,
+        Array(4).fill(0), // Initialize counts for new answers
+      ]);
+  
+      // Update totalTemplates if less than 7
+      const updatedTotalTemplates = newTemplates.length > 7 ? 7 : newTemplates.length;
+      setTotalTemplates(updatedTotalTemplates); // Correct way to update state
+  
+      // Update the progress display
+      setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`);
+      setCurrentTemplateIndex((prevIndex) => Math.min(prevIndex + 1, totalTemplates - 1));
+      return newTemplates;
+    });
   };
 
+
   const handleImageUpload = (index, event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]; // Get the uploaded file
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
+      const imageUrl = URL.createObjectURL(file); // Create a URL for the file
       const updatedTemplates = [...templates];
-      updatedTemplates[index].imageUrl = imageUrl;
+      updatedTemplates[index].imageUrl = imageUrl; // Update the image URL
       setTemplates(updatedTemplates);
     }
   };
 
   const removeImage = (index) => {
     const updatedTemplates = [...templates];
-    updatedTemplates[index].imageUrl = "";
+    updatedTemplates[index].imageUrl = ""; // Clear the image URL
     setTemplates(updatedTemplates);
   };
 
   const removeTemplate = (templateIndex) => {
     setTemplates((prevTemplates) => {
+      if (prevTemplates.length === 0) return prevTemplates; // No templates to remove
+  
       const newTemplates = [...prevTemplates];
       newTemplates.splice(templateIndex, 1);
+  
+      // Update counts accordingly
+      setCounts((prevCounts) => {
+        const newCounts = [...prevCounts];
+        newCounts.splice(templateIndex, 1); // Remove corresponding counts
+        return newCounts;
+      });
+  
+      // Update totalTemplates using setTotalTemplates
+      const updatedTotalTemplates = newTemplates.length > 7 ? 7 : newTemplates.length;
+      setTotalTemplates(updatedTotalTemplates); // Use the setter function to update state
+  
+      // Handle edge case when the current template is removed
+      if (currentTemplateIndex >= updatedTotalTemplates) {
+        setCurrentTemplateIndex(updatedTotalTemplates - 1); // Move to the last available template
+      }
+  
+      // Update progress display
+      setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${updatedTotalTemplates}`);
+  
       return newTemplates;
     });
   };
+  
 
+  // Reset Functionality
   const resetTemplatesAndLayout = () => {
+    // Clear localStorage
     localStorage.removeItem("templates");
+    localStorage.removeItem("layout");
+    localStorage.removeItem("buttonColor");
+    localStorage.removeItem("backgroundColor");
+    localStorage.removeItem("isLarge");
+    localStorage.removeItem("QuizID");
+    setCounts([Array(4).fill(0)]);
+
+    // Reset state to default values
     setTemplates([
       {
         question: "What is the Question?",
@@ -128,9 +211,17 @@ export default function EditorPage() {
         imageUrl: "",
       },
     ]);
-    setActiveTemplateIndex(0); // Reset to the first template
+
+    setLayout("stacked");
+    setIsBig(false); // Reset to small text
+    setBackgroundColor("white");
+    setButtonColor("lightblue");
+    setTotalTemplates(1); // Start with 1 default question
+    setCurrentTemplateIndex(0);
+    setProgressDisplay(`Question 1 of 1`);
   };
 
+  // Handle submission of the questions to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -198,7 +289,7 @@ export default function EditorPage() {
     setIsBig(!islarge);
   };
 
-  // Add a state to track counts for each answer
+  // Add a state to track counts for each answer (used for the scoring system)
   const [counts, setCounts] = useState(() => {
     return templates.map(() => Array(4).fill(0)); // Initialize counters to 0 for each answer
   });
@@ -218,6 +309,35 @@ export default function EditorPage() {
     }
     setCounts(newCounts);
   };
+
+  useEffect(() => {
+    setTotalTemplates(templates.length);
+    setProgressDisplay(`Question ${currentTemplateIndex + 1} of ${totalTemplates}`);
+  }, [templates, currentTemplateIndex]);
+
+  const TemplatePreviewSmall = ({ template, onClick, isActive }) => {
+    return (
+      <div 
+        className={`p-2 border rounded-lg mb-2 cursor-pointer hover:shadow-lg ${isActive ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`} 
+        onClick={onClick}
+        style={{ 
+          backgroundColor: isActive ? 'rgba(173, 216, 230, 0.5)' : 'rgba(255, 255, 255, 0.9)', // Highlight background for active
+        }}
+      >
+        <div className="flex flex-col">
+          {template.imageUrl && (
+            <img 
+              src={template.imageUrl} 
+              alt="thumbnail" 
+              className="w-16 h-16 object-cover mb-2 rounded-md" 
+            />
+          )}
+          <p className="text-sm font-semibold">{template.question}</p>
+        </div>
+      </div>
+    );
+  };
+  
 
   return (
     <div className="flex min-h-full bg-gray-100 text-black">
@@ -243,8 +363,6 @@ export default function EditorPage() {
               className="flex mb-6 bg-white rounded-lg shadow-md"
             >
               <div className="mr-5 bg-gray-200 p-5 flex flex-col space-y-2">
-                {" "}
-                {/* Use flex-col for vertical stacking */}
                 <button
                   type="button" // Ensure this is a button element
                   onClick={() => {
@@ -327,6 +445,29 @@ export default function EditorPage() {
                       className="flex-1 text-xl p-3 border border-gray-300 rounded-full shadow-sm"
                       placeholder={`Answer ${answerIndex + 1}`}
                     />
+                    <div className="flex items-center ml-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          decrementCount(templateIndex, answerIndex)
+                        }
+                      >
+                        <FiMinus />
+                      </button>
+                      <span className="mx-2">
+                      {counts[templateIndex] && counts[templateIndex][answerIndex] !== undefined 
+                        ? counts[templateIndex][answerIndex] 
+                        : 0} {/* Default to 0 if not defined */}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          incrementCount(templateIndex, answerIndex)
+                        }
+                      >
+                        <FiPlus />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -339,6 +480,7 @@ export default function EditorPage() {
             <FiCheck />
             Submit Questions
           </button>
+          {/* Reset Button */}
           <button
             type="button"
             onClick={resetTemplatesAndLayout}
@@ -359,43 +501,38 @@ export default function EditorPage() {
       </div>
 
       {/* Template Preview */}
-      <div className="flex-1 flex justify-center items-center">
-        {/* Active Template Preview */}
-        <TemplatePreview
-          questions={[templates[activeTemplateIndex].question]}
-          answers={templates[activeTemplateIndex].answers}
-          islarge={islarge}
-          layout={layout} // Or your desired layout
-          imageUrl={templates[activeTemplateIndex].imageUrl}
-          buttonColor={buttonColor}
-          backgroundColor={backgroundColor}
-        />
+      <div className="ml-52 p-4 ">
+        {/* Render only the current template */}
+        {templates.length > 0 && (
+          <div className="mb-6">
+            <TemplatePreview
+              {...templates[currentTemplateIndex]} // only show the current template
+              islarge={islarge}
+              layout={layout}
+              buttonColor={buttonColor}
+              backgroundColor={backgroundColor}
+              questions={[templates[currentTemplateIndex].question]} 
+              answers={templates[currentTemplateIndex].answers} 
+              buttonStyle={buttonStyle}
+              totalTemplates={totalTemplates}
+              currentTemplateIndex={currentTemplateIndex}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Vertical Slideshow of Templates */}
-      <div className="flex-1 flex justify-center items-center p-4 max-w-min">
-        <div className="overflow-y-auto max-h-screen">
-          {templates.map((template, index) => (
-            <div
-              key={index}
-              className={`mb-4 cursor-pointer rounded-lg shadow-md p-2 ${
-                activeTemplateIndex === index ? "bg-blue-100" : "bg-white"
-              }`}
-              onClick={() => setActiveTemplateIndex(index)}
-            >
-              <TemplatePreview
-                questions={[template.question]}
-                answers={template.answers}
-                islarge={islarge}
-                layout={layout}
-                imageUrl={template.imageUrl}
-                buttonColor={buttonColor}
-                backgroundColor={backgroundColor}
-                size="small" // Control size with this class
-              />
-            </div>
-          ))}
-        </div>
+      {/* Side Preview of All Templates */}
+      <div className="fixed top-1/2 right-0 transform -translate-y-1/2 z-40 p-4 bg-white border border-gray-200 shadow-md rounded-lg">
+        <h2 className="font-bold mb-2">Quiz Previews</h2>
+        <div>{progressDisplay}</div>
+        {templates.map((template, index) => (
+          <TemplatePreviewSmall
+            key={index}
+            template={template}
+            onClick={() => setCurrentTemplateIndex(index)} // Set current template index on click
+            isActive={currentTemplateIndex === index} // Highlight if active
+          />
+        ))}
       </div>
     </div>
   );
