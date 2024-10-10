@@ -17,6 +17,7 @@ export default function TemplatePreview({
   buttonStyle,
   currentTemplateIndex = 0, // Default value
   totalTemplates = 1, // Default value
+  onAnswerSelect,
 }) {
   // Define the button style with the question container
   const getStyledContainer = () => {
@@ -54,6 +55,7 @@ export default function TemplatePreview({
         return (
           <button
             key={index}
+            onClick={() => onAnswerSelect(index)}
             className="flex items-center justify-start py-4 px-2 rounded-full border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
             style={{ backgroundColor: "white" }}
           >
@@ -75,6 +77,7 @@ export default function TemplatePreview({
         return (
           <button
             key={index}
+            onClick={() => onAnswerSelect(index)}
             className="py-4 px-6 rounded-lg border-2 border-white focus:outline-none focus:ring-2 text-lg text-black"
             style={{ backgroundColor: "lightgray" }}
           >
@@ -85,6 +88,7 @@ export default function TemplatePreview({
         return (
           <button
             key={index}
+            onClick={() => onAnswerSelect(index)}
             className="py-4 px-6 rounded-lg border-2 border-black bg-white text-black focus:outline-none focus:ring-2 text-lg"
           >
             {answer}
@@ -94,6 +98,7 @@ export default function TemplatePreview({
         return (
           <button
             key={index}
+            onClick={() => onAnswerSelect(index)}
             className="py-4 px-6 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 text-lg"
           >
             {answer}

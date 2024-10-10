@@ -64,6 +64,11 @@ const MyQuizzes = () => {
     }
   };
 
+  // Function called when an answer is selected
+  const handleAnswerSelect = (quizId) => {
+    handleNext(quizId); // Move to the next question automatically
+  };
+
   const handleEdit = (index) => {
     const quiz = quizzes[index]; // Get the selected quiz
 
@@ -156,6 +161,7 @@ const MyQuizzes = () => {
               buttonStyle={quizzes[currentQuizIndex].buttonStyle}
               currentTemplateIndex={currentQuestionIndex}
               totalTemplates={quizzes[currentQuizIndex].Questions.length}
+              onAnswerSelect={() => handleAnswerSelect(quizzes.QuizID)}
             />
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
