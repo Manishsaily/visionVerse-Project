@@ -1,34 +1,119 @@
-import React from "react"
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function ResultPage({
   buttonColor,
   backgroundColor,
   buttonStyle,
-  onRetry,   // Function to retry the quiz
-  onHome,    // Function to go back to home or dashboard
-  results,
+  onRetry, // Function to retry the quiz
+  onHome, // Function to go back to home or dashboard
+  message,
+  expirationDate,
+  couponDetails,
 }) {
   // Define the container for the result page
+  const [flipped, setFlipped] = useState(false);
+
+  const handleFlip = () => {
+    setFlipped((prev) => !prev);
+  };
+
+  const imageUrl = "/coffee-2.webp"; // Replace with your image path
+  const imageUrl2 = "/coffee.jpg"; // Replace with your image path
+
+  const handleButtonClick = (event) => {
+    event.stopPropagation(); // Prevent click from bubbling up
+  };
+
   const getResultContainer = () => {
     return (
-      <div
-        className="flex flex-col items-center gap-10 p-12 px-4 rounded-lg"
-        style={{ backgroundColor: buttonColor, borderRadius: "20px" }}
+      <motion.div
+        onClick={handleFlip}
+        style={{
+          perspective: "1000px",
+          width: "300px", // Adjust width as needed
+          height: "400px", // Adjust height as needed
+          position: "relative",
+          margin: "auto", // Center horizontally
+        }}
       >
-        {/* Display the result message */}
-        <p className="text-2xl font-semibold mb-4 text-center">
-          Quiz Completed!
-        </p>
-        <p className="text-lg text-center">
-        You have won a free coffee!
-        </p>
+        <motion.div
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            transformStyle: "preserve-3d",
+          }}
+          animate={{
+            rotateY: flipped ? 180 : 0,
+            transition: { duration: 0.6 },
+          }}
+        >
+          {/* Front Side */}
+          <motion.div
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              backfaceVisibility: "hidden",
+              backgroundImage: `url(${imageUrl})`, // Replace with your image path
+              backgroundSize: "cover", // Cover the entire area
+              backgroundPosition: "center", // Center the image
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "20px",
+              borderRadius: "20px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              color: "white",
+            }}
+          >
+            <p className="text-2xl font-semibold mb-4 text-center">
+              Quiz Completed!
+            </p>
+            <p className="text-lg text-center">{message}</p>
+            {getButton("Claim Coupon", onRetry)}
+            {getButton("Go to Home", onHome)}
+          </motion.div>
 
-        {/* Render Retry and Home buttons */}
-        <div className="flex flex-col space-y-4 w-full">
-          {getButton("Claim Coupon", onRetry)}
-          {getButton("Go to Home", onHome)}
-        </div>
-      </div>
+          {/* Back Side */}
+          <motion.div
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              backfaceVisibility: "hidden",
+              rotateY: 180,
+              backgroundImage: `url(${imageUrl2})`, // Replace with your image path
+              backgroundSize: "cover", // Cover the entire area
+              backgroundPosition: "center", // Center the image
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center", // Center vertically
+              alignItems: "center", // Center horizontally
+              padding: "20px",
+              borderRadius: "20px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)", // Add shadow for depth
+              color: "white",
+            }}
+          >
+            <p className="text-2xl font-semibold mb-4 text-center">
+              Coupon Details
+            </p>
+            <div
+              style={{ width: "100%", textAlign: "left", marginBottom: "10px" }}
+            >
+              <p className="text-lg font-semibold">Expiry:</p>
+              <p className="text-lg">{expirationDate}</p>
+            </div>
+            <div style={{ width: "100%", textAlign: "left" }}>
+              <p className="text-lg font-semibold">Details:</p>
+              <p className="text-lg">{couponDetails}</p>
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     );
   };
 
@@ -39,7 +124,7 @@ export default function ResultPage({
         return (
           <button
             onClick={onClick}
-            className="w-full py-4 rounded-lg border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
+            className="w-full mt-2 py-4 rounded-lg border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
             style={{ backgroundColor: "white" }}
           >
             {label}
@@ -49,7 +134,7 @@ export default function ResultPage({
         return (
           <button
             onClick={onClick}
-            className="w-full py-4 rounded-lg border-2 border-white text-lg text-black"
+            className="w-full mt-2 py-4 rounded-lg border-2 border-white text-lg text-black"
             style={{ backgroundColor: "lightgray" }}
           >
             {label}
@@ -59,7 +144,7 @@ export default function ResultPage({
         return (
           <button
             onClick={onClick}
-            className="w-full py-4 rounded-lg border-2 border-black bg-white text-black text-lg"
+            className="w-full mt-2 py-4 rounded-lg border-2 border-black bg-white text-black text-lg"
           >
             {label}
           </button>
@@ -68,7 +153,7 @@ export default function ResultPage({
         return (
           <button
             onClick={onClick}
-            className="w-full py-4 rounded-lg bg-gray-700 text-white text-lg"
+            className="w-full mt-2 py-4 rounded-lg bg-gray-700 text-white text-lg"
           >
             {label}
           </button>
@@ -87,9 +172,7 @@ export default function ResultPage({
           style={{ backgroundColor }}
         >
           {/* Result Content */}
-          <div className="p-8 mt-52">
-            {getResultContainer()}
-          </div>
+          <div className="p-8 mt-52">{getResultContainer()}</div>
         </div>
       </div>
     </div>

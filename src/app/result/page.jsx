@@ -57,7 +57,6 @@ export default function ResultPage() {
     }
   }, [buttonStyle]);
 
-
   const [results, setResults] = useState([
     { message: "You have won a free coffee!", coupon: "" },
   ]);
@@ -73,12 +72,39 @@ export default function ResultPage() {
     setResults(results.filter((_, i) => i !== index));
   };
 
-  const handleCouponChange = (index, event) => {
+  const handleMessageChange = (index, event) => {
     const newResults = [...results];
-    newResults[index].coupon = event.target.value;
+    newResults[index].message = event.target.value;
     setResults(newResults);
   };
 
+  const handleDetailsChange = (index, event) => {
+    const newResults = [...results];
+    newResults[index].couponDetails = event.target.value;
+    setResults(newResults);
+  };
+
+  const handleExpirationDateChange = (index, event) => {
+    const newResults = [...results];
+    newResults[index].expirationDate = event.target.value;
+    setResults(newResults);
+  };
+
+  const handleImageUpload = (index, event) => {
+    const file = event.target.files[0]; // Get the uploaded file
+    if (file) {
+      const imageUrl = URL.createObjectURL(file); // Create a URL for the file
+      const updatedTemplates = [...templates];
+      updatedTemplates[index].imageUrl = imageUrl; // Update the image URL
+      setTemplates(updatedTemplates);
+    }
+  };
+
+  const removeImage = (index) => {
+    const updatedTemplates = [...templates];
+    updatedTemplates[index].imageUrl = ""; // Clear the image URL
+    setTemplates(updatedTemplates);
+  };
 
   return (
     <div className="flex min-h-full bg-gray-100 text-black">
@@ -90,21 +116,31 @@ export default function ResultPage() {
             results={results}
             addNewResult={addNewResult}
             removeResult={removeResult}
-            handleCouponChange={handleCouponChange}
+            handleMessageChange={handleMessageChange}
+            handleExpirationDateChange={handleExpirationDateChange}
+            handleDetailsChange={handleDetailsChange}
+            handleImageUpload={handleImageUpload}
+            removeImage={removeImage}
           />
         </form>
       </div>
-      
 
       {/* Template Preview */}
       <div className="flex ml-52 p-4">
-        <ResultTemplate
-          buttonColor={buttonColor}
-          backgroundColor={backgroundColor}
-          buttonStyle={buttonStyle} // Pass button style to ResultTemplate
-          onRetry={() => alert("Coupon functionality")} // Placeholder for coupon
-          onHome={() => alert("Go to Home functionality")} // Placeholder for home
-        />
+        {results.map((result, index) => (
+          <ResultTemplate
+            key={index}
+            buttonColor={buttonColor}
+            backgroundColor={backgroundColor}
+            buttonStyle={buttonStyle}
+            message={result.message} // Corrected to pass a string, not an array
+            expirationDate={result.expirationDate} // Ensure this exists
+            couponDetails={result.couponDetails} // Ensure this is defined as well
+            imageUrl={result.imageUrl}
+            onRetry={() => alert("Coupon functionality")}
+            onHome={() => alert("Go to Home functionality")}
+          />
+        ))}
       </div>
     </div>
   );

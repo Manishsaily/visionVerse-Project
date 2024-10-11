@@ -1,11 +1,15 @@
 import React from "react";
-import { FiClipboard, FiTrash, FiType } from "react-icons/fi";
+import { FiClipboard, FiImage, FiTrash, FiType } from "react-icons/fi";
 
 const ResultManager = ({
   results,
   addNewResult,
   removeResult,
-  handleCouponChange,
+  handleImageUpload,
+  removeImage,
+  handleMessageChange,
+  handleDetailsChange,
+  handleExpirationDateChange,
 }) => {
   return (
     <div>
@@ -26,14 +30,48 @@ const ResultManager = ({
                 placeholder="Enter your message"
               />
             </div>
+            <h1>Select a header image:</h1>
+            <div className="flex items-center mb-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <FiImage />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(index, e)}
+                  className="border rounded-full p-2 w-full"
+                />
+              </label>
+
+              {result.imageUrl && (
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  <FiTrash />
+                  Remove Image
+                </button>
+              )}
+            </div>
             <div className="flex items-center mt-4">
-              <FiClipboard />
+              <FiType />
               <input
-                type="text"
-                value={result.coupon}
-                onChange={(e) => handleCouponChange(index, e)}
+                type="date"
+                value={result.expirationDate}
+                onChange={(e) => handleExpirationDateChange(index, e)}
                 className="flex-1 text-xl p-3 border border-gray-300 rounded-full shadow-sm ml-2"
-                placeholder="Enter your coupon code"
+                placeholder="Expiration Date (DD/MM/YYYY)"
+              />
+            </div>
+            <div className="flex mt-4">
+              <FiType className="mt-2" />
+              <textarea
+                value={result.details}
+                onChange={(e) => handleDetailsChange(index, e)}
+                className="flex-1 text-xl p-3 border border-gray-300 rounded-xl shadow-sm ml-2 pb-20"
+                placeholder="Enter coupon terms and conditions"
+                rows={3} // You can adjust the number of visible rows
+                style={{ overflow: "hidden" }} // Prevent manual resizing
               />
             </div>
           </div>
@@ -45,7 +83,7 @@ const ResultManager = ({
         onClick={addNewResult}
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600"
       >
-        Add New Result
+        Add Coupon
       </button>
     </div>
   );
