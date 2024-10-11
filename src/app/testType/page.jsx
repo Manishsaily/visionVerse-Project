@@ -33,14 +33,14 @@ export default function testType() {
             <ul className='flex justify-between'>
                 <li>
                     <Link href= "/">
-                        <button style={{borderColor: 'white', borderWidth: '2px', borderRadius: '20px'}}>
-                            <a style={{padding: "15px", paddingLeft: "25px", paddingRight: "25px"}}>Cancel</a>
+                        <button style={{borderColor: 'white', borderWidth: '2px', borderRadius: '20px', padding: "15px", paddingLeft: "25px", paddingRight: "25px"}}>
+                           Cancel
                         </button>
                     </Link>
                 </li>
                 <li>
-                    <button style={{borderColor: 'lightgray', borderWidth: '2px', borderRadius: '20px'}} disabled>
-                        <a style={{padding: "15px", paddingLeft: "25px", paddingRight: "25px", color: 'lightgray'}}>Save</a>
+                    <button style={{borderColor: 'lightgray', borderWidth: '2px', borderRadius: '20px', padding: "15px", paddingLeft: "25px", paddingRight: "25px", color: 'lightgray'}} disabled>
+                        Save
                     </button>
                 </li>
             </ul>

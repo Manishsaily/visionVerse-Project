@@ -32,31 +32,30 @@ export default function TemplatePreview({
           {questions}
         </p>
         <div
-          className={`flex ${
-            layout === "stacked"
-              ? "flex-col space-y-2"
-              : "grid grid-cols-2 gap-2"
-          }`}
+          className={`grid ${layout === "stacked" ? "grid-cols-1" : "grid-cols-2"} gap-4 w-full`}
         >
           {answers.map((answer, idx) => (
-            <div className={layout === "corner" ? "w-full" : ""} key={idx}>
-              {getButtonStyle(answer, idx, layout)}
+            <div className="flex justify-center" key={idx}>
+              {getButtonStyle(answer, idx)}
             </div>
           ))}
         </div>
       </div>
     );
   };
-
-  // Define different button styles
+  
+  // Define different button styles with responsive sizing
   const getButtonStyle = (answer, index) => {
+    // Base styles for button size
+    const buttonBaseStyle = "w-full h-16 flex items-center justify-center rounded-lg focus:outline-none focus:ring-2 text-lg overflow-hidden whitespace-nowrap text-ellipsis";
+  
     switch (buttonStyle) {
       case "style1":
         return (
           <button
             key={index}
             onClick={() => onAnswerSelect(index)}
-            className="flex items-center justify-start py-4 px-2 rounded-full border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
+            className={`${buttonBaseStyle} border-2 border-blue-500 text-black`}
             style={{ backgroundColor: "white" }}
           >
             <span className="mr-2">
@@ -78,7 +77,7 @@ export default function TemplatePreview({
           <button
             key={index}
             onClick={() => onAnswerSelect(index)}
-            className="py-4 px-6 rounded-lg border-2 border-white focus:outline-none focus:ring-2 text-lg text-black"
+            className={`${buttonBaseStyle} border-2 border-white text-black`}
             style={{ backgroundColor: "lightgray" }}
           >
             {answer}
@@ -89,7 +88,7 @@ export default function TemplatePreview({
           <button
             key={index}
             onClick={() => onAnswerSelect(index)}
-            className="py-4 px-6 rounded-lg border-2 border-black bg-white text-black focus:outline-none focus:ring-2 text-lg"
+            className={`${buttonBaseStyle} border-2 border-black bg-white text-black`}
           >
             {answer}
           </button>
@@ -99,7 +98,7 @@ export default function TemplatePreview({
           <button
             key={index}
             onClick={() => onAnswerSelect(index)}
-            className="py-4 px-6 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 text-lg"
+            className={`${buttonBaseStyle} bg-gray-700 text-white`}
           >
             {answer}
           </button>
