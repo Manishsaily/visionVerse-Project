@@ -23,16 +23,22 @@ export default function TemplatePreview({
   const getStyledContainer = () => {
     return (
       <div
-        className={`flex flex-col items-center gap-20 p-12 px-4 rounded-lg ${
+        className={`flex flex-col items-center gap-2 p-6 px-4 rounded-lg ${
           layout === "stacked" ? "-mt-8" : ""
         }`} // Add margin-top for stacked layout
         style={{ backgroundColor: buttonColor, borderRadius: "20px" }}
       >
-        <p className={`${isLarge ? "text-2xl" : "text-lg"} mb-4 text-center`}>
+        <p
+          className={`${
+            isLarge ? "text-2xl" : "text-lg"
+          } mb-4 text-center text-black`}
+        >
           {questions}
         </p>
         <div
-          className={`grid ${layout === "stacked" ? "grid-cols-1" : "grid-cols-2"} gap-4 w-full`}
+          className={`grid ${
+            layout === "stacked" ? "grid-cols-1" : "grid-cols-2"
+          } gap-4 w-full`}
         >
           {answers.map((answer, idx) => (
             <div className="flex justify-center" key={idx}>
@@ -43,12 +49,12 @@ export default function TemplatePreview({
       </div>
     );
   };
-  
+
   // Define different button styles with responsive sizing
   const getButtonStyle = (answer, index) => {
-    // Base styles for button size
-    const buttonBaseStyle = "w-full h-16 flex items-center justify-center rounded-lg focus:outline-none focus:ring-2 text-lg overflow-hidden whitespace-nowrap text-ellipsis";
-  
+    const buttonBaseStyle =
+      "w-full h-16 flex items-center justify-center rounded-lg focus:outline-none focus:ring-2 text-lg overflow-hidden whitespace-nowrap text-ellipsis";
+
     switch (buttonStyle) {
       case "style1":
         return (
@@ -113,7 +119,7 @@ export default function TemplatePreview({
       {/* Phone Screen Container */}
       <div className="w-[375px] h-[800px] bg-black border rounded-[40px] overflow-hidden shadow-lg">
         <div
-          className="h-full rounded-[40px] overflow-hidden"
+          className="h-full rounded-[40px] overflow-hidden relative"
           style={{ backgroundColor }}
         >
           {/* Progress Bar Container */}
@@ -124,7 +130,7 @@ export default function TemplatePreview({
                 style={{
                   width: `${
                     ((currentTemplateIndex + 1) / totalTemplates) * 100
-                  }%`, // Dynamic width based on current question
+                  }%`,
                   height: "100%",
                 }}
               >
@@ -135,8 +141,20 @@ export default function TemplatePreview({
             </div>
           </div>
 
+          {/* Image Below Progress Bar */}
+          {imageUrl && (
+            <div className="absolute top-16 left-0 right-0 flex justify-center p-5">
+              <img
+                src={imageUrl}
+                alt="Template"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: "200px", width: "auto" }}
+              />
+            </div>
+          )}
+
           {/* Quiz Content */}
-          <div className={`p-8 ${imageUrl ? "mt-24" : "mt-52"}`}>
+          <div className={`p-8 ${imageUrl ? "mt-64" : "mt-48"}`}>
             {/* Render styled containers for questions and answers */}
             {getStyledContainer()}
           </div>

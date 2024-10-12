@@ -475,6 +475,7 @@ export default function EditorPage() {
               buttonStyle={buttonStyle}
               totalTemplates={totalTemplates}
               currentTemplateIndex={currentTemplateIndex}
+              imageUrl={templates[currentTemplateIndex].imageUrl}
             />
           </div>
         )}

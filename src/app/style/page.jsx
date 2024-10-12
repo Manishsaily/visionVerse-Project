@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
 import { FiSun, FiMoon, FiDroplet, FiCloud } from "react-icons/fi";
 
-
 export default function StylePage() {
   // State initialization with localStorage fallback
   const [backgroundColor, setBackgroundColor] = useState(() => {
@@ -43,66 +42,135 @@ export default function StylePage() {
     }
   });
 
-  // Saving backgroundColor, buttonColor, and buttonStyle to localStorage
-  useEffect(() => {
+  const [currentQuestion, setCurrentQuestion] = useState({});
+  const [templates, setTemplates] = useState(() => {
     try {
-      localStorage.setItem("backgroundColor", backgroundColor);
+      return JSON.parse(localStorage.getItem("templates")) || [];
     } catch (error) {
-      console.error("Error setting backgroundColor in localStorage", error);
+      console.error("Error accessing localStorage", error);
+      return [];
     }
+  });
+
+  // Saving backgroundColor, buttonColor, buttonStyle, and templates to localStorage
+  useEffect(() => {
+    localStorage.setItem("backgroundColor", backgroundColor);
   }, [backgroundColor]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("buttonColor", buttonColor);
-    } catch (error) {
-      console.error("Error setting buttonColor in localStorage", error);
-    }
+    localStorage.setItem("buttonColor", buttonColor);
   }, [buttonColor]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("buttonStyle", buttonStyle);
-    } catch (error) {
-      console.error("Error setting buttonStyle in localStorage", error);
-    }
+    localStorage.setItem("buttonStyle", buttonStyle);
   }, [buttonStyle]);
 
+  useEffect(() => {
+    localStorage.setItem("templates", JSON.stringify(templates));
+  }, [templates]);
+
   // Handle the theme changes
-  const handleThemeChange = (bgColour, btnColour, btnStyle) => {
+  const handleThemeChange = (bgColour, btnColour, btnStyle, questions) => {
     setBackgroundColor(bgColour);
     setButtonColor(btnColour);
     setButtonStyle(btnStyle);
+    setCurrentQuestion(questions[0]); // Set the first question
+    setTemplates(questions); // Save the questions as templates
   };
 
   const options = [
     {
       bgColor: "pink",
       btnColor: "white",
-      label: "Pink Background, White Buttons",
+      label: "Pink questionnaire",
       icon: <FiSun />,
       btnStyle: "style1",
+      questions: [
+        {
+          question: "What is your favorite pink dessert?",
+          answers: [
+            "Cotton Candy",
+            "Strawberry Cheesecake",
+            "Raspberry Sorbet",
+            "Pink Macarons",
+          ],
+        },
+        {
+          question: "Which pink drink do you prefer?",
+          answers: [
+            "Pink Lemonade",
+            "Rose Tea",
+            "Watermelon Juice",
+            "Pink Champagne",
+          ],
+        },
+      ],
     },
     {
       bgColor: "white",
       btnColor: "lightgray",
-      label: "White Background, Gray Buttons",
+      label: "Italian questionnaire",
       icon: <FiMoon />,
       btnStyle: "style2",
+      questions: [
+        {
+          question: "What is your favorite white cheese?",
+          answers: ["Feta", "Mozzarella", "Ricotta", "Parmesan"],
+        },
+        {
+          question: "What white wine do you enjoy?",
+          answers: [
+            "Chardonnay",
+            "Sauvignon Blanc",
+            "Pinot Grigio",
+            "Riesling",
+          ],
+        },
+      ],
     },
     {
       bgColor: "#F0CB83",
       btnColor: "white",
-      label: "Cream Background, White Buttons",
+      label: "Cream questionnaire",
       icon: <FiDroplet />,
       btnStyle: "style3",
+      questions: [
+        {
+          question: "What is your favorite creamy dish?",
+          answers: [
+            "Alfredo Pasta",
+            "Creamy Risotto",
+            "Cheesecake",
+            "Panna Cotta",
+          ],
+        },
+        {
+          question: "What is your favorite cream-based drink?",
+          answers: ["Milkshake", "Hot Chocolate", "Cream Soda", "Latte"],
+        },
+      ],
     },
     {
       bgColor: "lightblue",
       btnColor: "white",
-      label: "Light Blue Background, White Buttons",
+      label: "Blue questionnaire",
       icon: <FiCloud />,
       btnStyle: "style4",
+      questions: [
+        {
+          question: "What is your favorite seafood dish?",
+          answers: ["Sushi", "Grilled Salmon", "Fish Tacos", "Clam Chowder"],
+        },
+        {
+          question: "What is your favorite blue drink?",
+          answers: [
+            "Blue Lagoon",
+            "Ocean Breeze",
+            "Blueberry Smoothie",
+            "Blue Curacao",
+          ],
+        },
+      ],
     },
   ];
 
@@ -118,7 +186,12 @@ export default function StylePage() {
             <div key={index} className="flex flex-col items-center">
               <button
                 onClick={() =>
-                  handleThemeChange(option.bgColor, option.btnColor, option.btnStyle)
+                  handleThemeChange(
+                    option.bgColor,
+                    option.btnColor,
+                    option.btnStyle,
+                    option.questions
+                  )
                 }
                 className={`p-4 flex items-center gap-2 rounded-3xl text-black hover:shadow-lg shadow-md`}
                 style={{
@@ -141,7 +214,12 @@ export default function StylePage() {
                     buttonStyle === option.btnStyle
                   }
                   onChange={() =>
-                    handleThemeChange(option.bgColor, option.btnColor, option.btnStyle)
+                    handleThemeChange(
+                      option.bgColor,
+                      option.btnColor,
+                      option.btnStyle,
+                      option.questions
+                    )
                   }
                 />
               </div>
@@ -153,8 +231,8 @@ export default function StylePage() {
       {/* Template Preview */}
       <div className="flex ml-52 p-4">
         <TemplatePreview
-          questions={["What is the Question?"]}
-          answers={["Answer 1", "Answer 2", "Answer 3", "Answer 4"]}
+          questions={currentQuestion.question || "Select a theme"}
+          answers={currentQuestion.answers || []}
           buttonColor={buttonColor}
           backgroundColor={backgroundColor}
           layout={layout}

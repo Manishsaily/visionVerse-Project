@@ -5,61 +5,39 @@ import ResultManager from "../components/ResultManager";
 import ResultTemplate from "../components/ResultTemplate";
 
 export default function ResultPage() {
-  const [backgroundColor] = useState(() => {
-    try {
-      return localStorage.getItem("backgroundColor") || "white";
-    } catch (error) {
-      console.error("Error accessing localStorage", error);
-      return "white";
-    }
-  });
+  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [buttonColor, setButtonColor] = useState("lightblue");
+  const [buttonStyle, setButtonStyle] = useState("style1");
+  const [results, setResults] = useState([]);
+  const [submittedCoupon, setSubmittedCoupon] = useState(null);
 
-  const [buttonColor] = useState(() => {
-    try {
-      return localStorage.getItem("buttonColor") || "lightblue";
-    } catch (error) {
-      console.error("Error accessing localStorage", error);
-      return "lightblue";
-    }
-  });
+  const handleSubmitCoupon = (coupon) => {
+    setSubmittedCoupon(coupon);
+  };
 
-  const [buttonStyle, setButtonStyle] = useState(() => {
-    try {
-      return localStorage.getItem("buttonStyle") || "style1";
-    } catch (error) {
-      console.error("Error accessing localStorage", error);
-      return "style1";
-    }
-  });
-
-  // Saving backgroundColor and buttonColor to localStorage
+  // Load colors and styles from localStorage on client side
   useEffect(() => {
-    try {
-      localStorage.setItem("backgroundColor", backgroundColor);
-    } catch (error) {
-      console.error("Error setting backgroundColor in localStorage", error);
-    }
+    const savedBackgroundColor = localStorage.getItem("backgroundColor");
+    const savedButtonColor = localStorage.getItem("buttonColor");
+    const savedButtonStyle = localStorage.getItem("buttonStyle");
+
+    if (savedBackgroundColor) setBackgroundColor(savedBackgroundColor);
+    if (savedButtonColor) setButtonColor(savedButtonColor);
+    if (savedButtonStyle) setButtonStyle(savedButtonStyle);
+  }, []);
+
+  // Save values to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem("backgroundColor", backgroundColor);
   }, [backgroundColor]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("buttonColor", buttonColor);
-    } catch (error) {
-      console.error("Error setting buttonColor in localStorage", error);
-    }
+    localStorage.setItem("buttonColor", buttonColor);
   }, [buttonColor]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("buttonStyle", buttonStyle);
-    } catch (error) {
-      console.error("Error setting buttonStyle in localStorage", error);
-    }
+    localStorage.setItem("buttonStyle", buttonStyle);
   }, [buttonStyle]);
-
-  const [results, setResults] = useState([
-    { message: "You have won a free coffee!", coupon: "" },
-  ]);
 
   const addNewResult = () => {
     setResults([
@@ -94,16 +72,16 @@ export default function ResultPage() {
     const file = event.target.files[0]; // Get the uploaded file
     if (file) {
       const imageUrl = URL.createObjectURL(file); // Create a URL for the file
-      const updatedTemplates = [...templates];
+      const updatedTemplates = [...results];
       updatedTemplates[index].imageUrl = imageUrl; // Update the image URL
-      setTemplates(updatedTemplates);
+      setResults(updatedTemplates);
     }
   };
 
   const removeImage = (index) => {
-    const updatedTemplates = [...templates];
+    const updatedTemplates = [...results];
     updatedTemplates[index].imageUrl = ""; // Clear the image URL
-    setTemplates(updatedTemplates);
+    setResults(updatedTemplates);
   };
 
   return (
@@ -114,7 +92,8 @@ export default function ResultPage() {
           {/* Questions and Image Uploads */}
           <ResultManager
             results={results}
-            addNewResult={addNewResult}
+            setResults={setResults}
+            onSubmitCoupon={handleSubmitCoupon}
             removeResult={removeResult}
             handleMessageChange={handleMessageChange}
             handleExpirationDateChange={handleExpirationDateChange}
@@ -133,9 +112,9 @@ export default function ResultPage() {
             buttonColor={buttonColor}
             backgroundColor={backgroundColor}
             buttonStyle={buttonStyle}
-            message={result.message} // Corrected to pass a string, not an array
-            expirationDate={result.expirationDate} // Ensure this exists
-            couponDetails={result.couponDetails} // Ensure this is defined as well
+            message={result.message}
+            expirationDate={result.expirationDate}
+            couponDetails={result.couponDetails}
             imageUrl={result.imageUrl}
             onRetry={() => alert("Coupon functionality")}
             onHome={() => alert("Go to Home functionality")}
