@@ -6,13 +6,13 @@ import ResultTemplate from "../components/ResultTemplate";
 
 export default function ResultPage() {
   const [results, setResults] = useState([
-    { message: "Congratulations!", couponDetails: "10% off", expirationDate: "2024-12-31", imageUrl: "/coffee-2.webp" }
+    {
+      message: "Congratulations!",
+      couponDetails: "10% off",
+      expirationDate: "2024-12-31",
+      imageUrl: "/coffee-2.webp",
+    },
   ]);
-  
-  const [submittedCoupon, setSubmittedCoupon] = useState(null);
-  const handleSubmitCoupon = (coupon) => {
-    setSubmittedCoupon(coupon);
-  };
 
   const [backgroundColor] = useState(() => {
     try {
@@ -40,17 +40,6 @@ export default function ResultPage() {
       return "style1";
     }
   });
-
-  const addNewResult = () => {
-    setResults([
-      ...results,
-      { message: "You have won something!", coupon: "" },
-    ]);
-  };
-
-  const removeResult = (index) => {
-    setResults(results.filter((_, i) => i !== index));
-  };
 
   const handleMessageChange = (index, event) => {
     const newResults = [...results];
@@ -86,23 +75,63 @@ export default function ResultPage() {
     setResults(updatedTemplates);
   };
 
+  const handleSubmitCoupons = async (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    try {
+      for (const result of results) {
+        const { message, couponDetails, expirationDate, imageUrl } = result;
+
+        const response = await fetch("/api/coupons", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message,
+            couponDetails,
+            expirationDate,
+            imageUrl,
+          }),
+        });
+
+        const couponResult = await response.json();
+
+        if (couponResult.error) {
+          console.error(couponResult.error);
+          alert("Failed to create coupon: " + couponResult.error);
+          return;
+        }
+      }
+
+      alert("Coupons created successfully!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while creating the coupons.");
+    }
+  };
+
   return (
     <div className="flex min-h-full bg-gray-100 text-black">
       {/* Editor Controls */}
       <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
-        <form>
+        <form onSubmit={handleSubmitCoupons}>
           {/* Questions and Image Uploads */}
           <ResultManager
             results={results}
             setResults={setResults}
-            onSubmitCoupon={handleSubmitCoupon}
-            removeResult={removeResult}
             handleMessageChange={handleMessageChange}
             handleExpirationDateChange={handleExpirationDateChange}
             handleDetailsChange={handleDetailsChange}
             handleImageUpload={handleImageUpload}
             removeImage={removeImage}
           />
+          <button
+            type="submit"
+            className="mt-4 bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600"
+          >
+            Submit Coupon
+          </button>
         </form>
       </div>
 
