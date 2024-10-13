@@ -1,43 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ResultManager from "../components/ResultManager";
 import ResultTemplate from "../components/ResultTemplate";
 
 export default function ResultPage() {
-  const [backgroundColor, setBackgroundColor] = useState("white");
-  const [buttonColor, setButtonColor] = useState("lightblue");
-  const [buttonStyle, setButtonStyle] = useState("style1");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([
+    { message: "Congratulations!", couponDetails: "10% off", expirationDate: "2024-12-31", imageUrl: "/coffee-2.webp" }
+  ]);
+  
   const [submittedCoupon, setSubmittedCoupon] = useState(null);
-
   const handleSubmitCoupon = (coupon) => {
     setSubmittedCoupon(coupon);
   };
 
-  // Load colors and styles from localStorage on client side
-  useEffect(() => {
-    const savedBackgroundColor = localStorage.getItem("backgroundColor");
-    const savedButtonColor = localStorage.getItem("buttonColor");
-    const savedButtonStyle = localStorage.getItem("buttonStyle");
+  const [backgroundColor] = useState(() => {
+    try {
+      return localStorage.getItem("backgroundColor") || "white";
+    } catch (error) {
+      console.error("Error accessing localStorage", error);
+      return "white";
+    }
+  });
 
-    if (savedBackgroundColor) setBackgroundColor(savedBackgroundColor);
-    if (savedButtonColor) setButtonColor(savedButtonColor);
-    if (savedButtonStyle) setButtonStyle(savedButtonStyle);
-  }, []);
+  const [buttonColor] = useState(() => {
+    try {
+      return localStorage.getItem("buttonColor") || "lightblue";
+    } catch (error) {
+      console.error("Error accessing localStorage", error);
+      return "lightblue";
+    }
+  });
 
-  // Save values to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem("backgroundColor", backgroundColor);
-  }, [backgroundColor]);
-
-  useEffect(() => {
-    localStorage.setItem("buttonColor", buttonColor);
-  }, [buttonColor]);
-
-  useEffect(() => {
-    localStorage.setItem("buttonStyle", buttonStyle);
-  }, [buttonStyle]);
+  const [buttonStyle] = useState(() => {
+    try {
+      return localStorage.getItem("buttonStyle") || "style1";
+    } catch (error) {
+      console.error("Error accessing localStorage", error);
+      return "style1";
+    }
+  });
 
   const addNewResult = () => {
     setResults([

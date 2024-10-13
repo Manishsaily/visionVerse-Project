@@ -11,6 +11,7 @@ export default function ResultPage({
   expirationDate,
   couponDetails,
 }) {
+  
   // Define the container for the result page
   const [flipped, setFlipped] = useState(false);
 
@@ -28,7 +29,6 @@ export default function ResultPage({
   const getResultContainer = () => {
     return (
       <motion.div
-        onClick={handleFlip}
         style={{
           perspective: "1000px",
           width: "300px", // Adjust width as needed
@@ -73,12 +73,13 @@ export default function ResultPage({
               Quiz Completed!
             </p>
             <p className="text-lg text-center">{message}</p>
-            {getButton("Claim Coupon", onRetry)}
+            {getButton("Claim Coupon", handleFlip)}
             {getButton("Go to Home", onHome)}
           </motion.div>
 
           {/* Back Side */}
           <motion.div
+            onClick={handleFlip}
             style={{
               position: "absolute",
               width: "100%",
