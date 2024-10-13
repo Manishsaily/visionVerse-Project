@@ -21,25 +21,21 @@ export default function TemplatePreview({
 }) {
   // Define the button style with the question container
   const getStyledContainer = () => {
+    const containerHeight =
+      buttonStyle === "style2" ? "h-2/3" : "h-auto"; // Set height to 2/3 for style2
+
     return (
       <div
-        className={`flex flex-col items-center gap-2 p-6 px-4 rounded-lg ${
-          layout === "stacked" ? "-mt-8" : ""
-        }`} // Add margin-top for stacked layout
-        style={{ backgroundColor: buttonColor, borderRadius: "20px" }}
+        className={`flex flex-col items-center justify-center p-6 px-4 rounded-lg ${layout === "stacked" ? "-mt-48" : "-mt-48"} ${containerHeight}`}
+        style={{
+          backgroundColor: buttonStyle === "style2" ? "white" : buttonColor,
+          borderRadius: "20px",
+        }}
       >
-        <p
-          className={`${
-            isLarge ? "text-2xl" : "text-lg"
-          } mb-4 text-center text-black`}
-        >
+        <p className={`${isLarge ? "text-2xl" : "text-lg"} mb-4 text-center text-black`}>
           {questions}
         </p>
-        <div
-          className={`grid ${
-            layout === "stacked" ? "grid-cols-1" : "grid-cols-2"
-          } gap-4 w-full`}
-        >
+        <div className={`grid ${layout === "stacked" ? "grid-cols-1" : "grid-cols-2"} gap-4 w-full`}>
           {answers.map((answer, idx) => (
             <div className="flex justify-center" key={idx}>
               {getButtonStyle(answer, idx)}
@@ -114,31 +110,65 @@ export default function TemplatePreview({
     }
   };
 
+  const renderLargeNumberProgress = () => {
+    return (
+      <div className="flex justify-center items-center h-full mr-52">
+        <span className="text-6xl font-bold text-blue-600">
+          {currentTemplateIndex + 1}
+        </span>
+        <span className="text-2xl text-gray-600 ml-2">/ {totalTemplates}</span>
+      </div>
+    );
+  };
+
+  // Render progress circles for style2
+  const renderProgressCircles = () => {
+    return (
+      <div className="flex justify-center items-center gap-2 mt-16">
+        {Array.from({ length: totalTemplates }, (_, idx) => (
+          <div
+            key={idx}
+            className={`w-11 h-11 rounded-full flex justify-center items-center border-2 ${
+              idx === currentTemplateIndex ? "bg-orange-600 text-white" : "border-orange-600"
+            }`}
+          >
+            {idx === currentTemplateIndex && (
+              <span className="text-lg font-semibold">{currentTemplateIndex + 1}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Phone Screen Container */}
       <div className="w-[375px] h-[800px] bg-black border rounded-[40px] overflow-hidden shadow-lg">
-        <div
-          className="h-full rounded-[40px] overflow-hidden relative"
-          style={{ backgroundColor }}
-        >
-          {/* Progress Bar Container */}
-          <div className="w-full px-4 py-2 mt-6">
-            <div className="bg-gray-200 rounded-full h-6 relative">
-              <div
-                className="bg-blue-600 rounded-full"
-                style={{
-                  width: `${
-                    ((currentTemplateIndex + 1) / totalTemplates) * 100
-                  }%`,
-                  height: "100%",
-                }}
-              >
-                <span className="text-black text-xs font-semibold absolute left-1/2 -translate-x-1/2 top-1/2 transform -translate-y-1/2">
-                  {currentTemplateIndex + 1} of {totalTemplates}
-                </span>
-              </div>
-            </div>
+        <div className="h-full rounded-[40px] overflow-hidden relative" style={{ backgroundColor }}>
+         {/* Progress Bar Container */}
+         <div
+            className={`w-full px-4 py-2 ${
+              buttonStyle === "style2" ? "bg-gray-400" : ""
+            } h-[175px]`} // Gray background only for style2
+          >
+            {buttonStyle === "style3" ? renderLargeNumberProgress() : (
+              buttonStyle === "style2" ? renderProgressCircles() : (
+                <div className="rounded-full h-6 relative">
+                  <div
+                    className="bg-blue-600 rounded-full p-4 mt-12"
+                    style={{
+                      width: `${((currentTemplateIndex + 1) / totalTemplates) * 100}%`,
+                      height: "100%",
+                    }}
+                  >
+                    <span className="text-black text-xs font-semibold absolute left-1/2 -translate-x-1/2 top-1/2 transform -translate-y-1/2">
+                      {currentTemplateIndex + 1} of {totalTemplates}
+                    </span>
+                  </div>
+                </div>
+              )
+            )}
           </div>
 
           {/* Image Below Progress Bar */}

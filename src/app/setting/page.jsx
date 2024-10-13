@@ -57,14 +57,14 @@ export default function EditorPage() {
     }
   });
 
-  const [islarge, setIsBig] = useState(false);
+  const [isLarge, setIsBig] = useState(false);
   useEffect(() => {
     try {
-      localStorage.setItem("isLarge", JSON.stringify(islarge));
+      localStorage.setItem("isLarge", JSON.stringify(isLarge));
     } catch (error) {
       console.error("Error saving islarge to localStorage", error);
     }
-  }, [islarge]);
+  }, [isLarge]);
 
   const [layout, setLayout] = useState(() => {
     try {
@@ -340,7 +340,7 @@ export default function EditorPage() {
   }, [quizName]);
 
   const toggleSize = () => {
-    setIsBig(!islarge);
+    setIsBig((prevIsLarge) => !prevIsLarge);
   };
 
   // Add a state to track counts for each answer (used for the scoring system)
@@ -401,62 +401,62 @@ export default function EditorPage() {
   return (
     <div className="flex min-h-full bg-gray-100 text-black">
       {/* Editor Controls */}
-      <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4 flex justify-between items-center">
-            <button
-              type="button"
-              onClick={toggleSize}
-              className={`py-2 px-4 flex items-center gap-2 rounded-full shadow-md ${
-                islarge ? "bg-gray-800 text-white" : "bg-gray-300 text-black"
-              }`}
-            >
-              <AiOutlineQuestionCircle />
-              {islarge ? "Text Large" : "Text Small"}
-            </button>
-            <input
-              type="text"
-              value={quizName}
-              onChange={(e) => setQuizName(e.target.value)}
-              className="border border-gray-300 p-2 rounded ml-4"
-              placeholder="Quiz Name"
-            />
-          </div>
-          {/* Questions and Image Uploads */}
-          <TemplateManager
-            templates={templates}
-            addNewTemplate={addNewTemplate}
-            removeTemplate={removeTemplate}
-            handleQuestionChange={handleQuestionChange}
-            handleImageUpload={handleImageUpload}
-            removeImage={removeImage}
-            handleAnswerChange={handleAnswerChange}
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <FiCheck />
-            Submit Questions
-          </button>
-          {/* Reset Button */}
-          <button
-            type="button"
-            onClick={resetTemplatesAndLayout}
-            className="mt-4 bg-yellow-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          >
-            <FiRefreshCw />
-            Reset
-          </button>
-          <Link href="/quizzes" passHref>
-            <button
-              type="submit"
-              className="mt-4 bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Previews
-            </button>
-          </Link>
-        </form>
+      <div className="w-1/4 ml-20 p-4 mt-6 bg-white border-r border-gray-300 rounded-xl shadow-lg overflow-auto h-[80vh]"> {/* Adjust the height as needed */}
+          <form onSubmit={handleSubmit}>
+              <div className="mb-4 flex justify-between items-center">
+                <button
+                    type="button"
+                    onClick={toggleSize}
+                    className={`py-2 px-4 flex items-center gap-2 rounded-full ${
+                        isLarge ? "bg-gray-800 text-white" : "bg-gray-300 text-black"
+                    }`}
+                >
+                <AiOutlineQuestionCircle />
+                {isLarge ? "Text Large" : "Text Small"}
+                </button>
+                <input
+                  type="text"
+                  value={quizName}
+                  onChange={(e) => setQuizName(e.target.value)}
+                  className="border border-gray-300 p-2 rounded ml-4"
+                  placeholder="Quiz Name"
+                />
+              </div>
+              {/* Questions and Image Uploads */}
+              <TemplateManager
+                  templates={templates}
+                  addNewTemplate={addNewTemplate}
+                  removeTemplate={removeTemplate}
+                  handleQuestionChange={handleQuestionChange}
+                  handleImageUpload={handleImageUpload}
+                  removeImage={removeImage}
+                  handleAnswerChange={handleAnswerChange}
+              />
+              <button
+                  type="submit"
+                  className="bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                  <FiCheck />
+                  Save Questions
+              </button>
+              {/* Reset Button */}
+              <button
+                  type="button"
+                  onClick={resetTemplatesAndLayout}
+                  className="mt-4 bg-yellow-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              >
+                  <FiRefreshCw />
+                  Reset
+              </button>
+              <Link href="/quizzes" passHref>
+                  <button
+                      type="button"
+                      className="mt-4 bg-blue-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                      Previews
+                  </button>
+              </Link>
+          </form>
       </div>
 
       {/* Template Preview */}
@@ -466,7 +466,7 @@ export default function EditorPage() {
           <div className="mb-6">
             <TemplatePreview
               {...templates[currentTemplateIndex]} // only show the current template
-              islarge={islarge}
+              islarge={isLarge}
               layout={layout}
               buttonColor={buttonColor}
               backgroundColor={backgroundColor}

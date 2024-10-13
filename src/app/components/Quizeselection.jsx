@@ -5,7 +5,7 @@ const Quizselection = () => {
     return (
       <div>
           {/* Navbar */}
-          <nav className='bg-blue-600 text-white p-4'>
+          <nav className='bg-[#31dce2] text-black p-4'>
             <ul className='flex justify-center'>
                 <li>
                     <a>Vision Verse Interactive</a>

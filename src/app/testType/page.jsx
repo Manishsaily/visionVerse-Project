@@ -29,7 +29,7 @@ export default function testType() {
     <div className="flex flex-col">
 
         {/* Navbar */}
-        <nav className='bg-blue-600 text-white p-4'>
+        <nav className='bg-[#31dce2] text-white p-4'>
             <ul className='flex justify-between'>
                 <li>
                     <Link href= "/">
