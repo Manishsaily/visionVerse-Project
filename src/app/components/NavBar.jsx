@@ -15,10 +15,6 @@ const tabsData = [
     label: "Setting",
     links: "/setting",
   },
-  {
-    label: "Results",
-    links: "/result",
-  },
 ];
 
 const handleQuizSubmit = async (e) => {

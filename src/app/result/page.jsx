@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ResultManager from "../components/ResultManager";
 import ResultTemplate from "../components/ResultTemplate";
+import { RightNavbar } from "../components/RightBar";
 
 export default function ResultPage() {
   const [results, setResults] = useState([
@@ -136,7 +137,7 @@ export default function ResultPage() {
       </div>
 
       {/* Template Preview */}
-      <div className="flex ml-52 p-4">
+      <div className="ml-52 p-4">
         {results.map((result, index) => (
           <ResultTemplate
             key={index}
@@ -151,6 +152,9 @@ export default function ResultPage() {
             onHome={() => alert("Go to Home functionality")}
           />
         ))}
+      </div>
+      <div className="w-1/6 p-4 ml-auto bg-white border-l border-gray-300 shadow-xl">
+        <RightNavbar />
       </div>
     </div>
   );

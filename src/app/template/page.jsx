@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
 import { MdViewStream, MdViewModule } from "react-icons/md";
+import { RightNavbar } from "../components/RightBar";
 
 export default function TemplatePage() {
   const [templates] = useState([
@@ -127,6 +128,9 @@ export default function TemplatePage() {
             />
           </div>
         ))}
+      </div>
+      <div className="w-1/6 ml-auto p-4 bg-white border-l border-gray-300 shadow-xl">
+        <RightNavbar />
       </div>
     </div>
   );

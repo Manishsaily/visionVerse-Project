@@ -14,6 +14,7 @@ import {
 import { AiOutlinePlus, AiOutlineQuestionCircle } from "react-icons/ai";
 import Link from "next/link";
 import TemplateManager from "../components/TemplateManager";
+import { RightNavbar } from "../components/RightBar";
 
 export default function EditorPage() {
   const [quizName, setQuizName] = useState("");
@@ -460,7 +461,7 @@ export default function EditorPage() {
       </div>
 
       {/* Template Preview */}
-      <div className="ml-52 p-4 ">
+      <div className="ml-52 p-4">
         {/* Render only the current template */}
         {templates.length > 0 && (
           <div className="mb-6">
@@ -482,7 +483,7 @@ export default function EditorPage() {
       </div>
 
       {/* Side Preview of All Templates */}
-      <div className="fixed top-1/2 right-0 transform -translate-y-1/2 z-40 p-4 bg-white border border-gray-200 shadow-md rounded-lg">
+      <div className="mt-40 h-1/4 p-4 bg-white border border-gray-200 shadow-md rounded-lg">
         <h2 className="font-bold mb-2">Quiz Previews</h2>
         <div>{progressDisplay}</div>
         {templates.map((template, index) => (
@@ -493,6 +494,9 @@ export default function EditorPage() {
             isActive={currentTemplateIndex === index} // Highlight if active
           />
         ))}
+      </div>
+      <div className="w-1/6 p-4 ml-auto bg-white border-l border-gray-300 shadow-xl">
+        <RightNavbar />
       </div>
     </div>
   );

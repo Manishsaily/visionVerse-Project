@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import TemplatePreview from "../components/TemplatePreview";
 import { FiSun, FiMoon, FiDroplet, FiCloud } from "react-icons/fi";
+import { RightNavbar } from "../components/RightBar";
 
 export default function StylePage() {
   // State initialization with localStorage fallback
@@ -238,6 +239,9 @@ export default function StylePage() {
           layout={layout}
           buttonStyle={buttonStyle} // Pass button style to TemplatePreview
         />
+      </div>
+      <div className="w-1/6 p-4 ml-auto bg-white border-l border-gray-300 shadow-xl">
+        <RightNavbar />
       </div>
     </div>
   );
