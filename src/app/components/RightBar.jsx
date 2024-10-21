@@ -4,7 +4,7 @@ import { useState } from "react";
 const NavbarItem = ({ label, href, isActive, onClick }) => {
   return (
     <div
-      className={`p-2 rounded-lg mb-2 cursor-pointer hover:shadow-lg ${
+      className={`p-2 rounded-lg mb-2 cursor-pointer hover:shadow-lg text-black ${
         isActive ? "border-blue-500" : "border-gray-300"
       }`}
       onClick={onClick}
@@ -46,5 +46,3 @@ export const RightNavbar = () => {
     </div>
   );
 };
-
-

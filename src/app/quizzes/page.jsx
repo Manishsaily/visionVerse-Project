@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import TemplatePreview from "../components/TemplatePreview";
 import { FiTrash, FiEdit2 } from "react-icons/fi"; // Add FiPencil here
+import CongratulationsScreen from "../components/CongratulationsScreen";
 
 const MyQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -52,7 +53,7 @@ const MyQuizzes = () => {
   // Function to handle Next
   const handleNext = () => {
     // Check if there are more questions in the current quiz
-    if (currentQuestionIndex < quizzes[currentQuizIndex].Questions.length - 1) {
+    if (currentQuestionIndex < quizzes[currentQuizIndex].Questions.length) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
   };
@@ -102,6 +103,9 @@ const MyQuizzes = () => {
     setCurrentQuestionIndex(0); // Reset to the first question of the selected quiz
   };
 
+  const currentQuiz = quizzes[currentQuizIndex];
+  const couponExists = currentQuiz && currentQuiz.CouponDetails;
+
   return (
     <div className="flex min-h-screen bg-gray-100 text-black">
       {/* Sidebar for displaying "My Quizzes" */}
@@ -141,29 +145,53 @@ const MyQuizzes = () => {
             key={quizzes[currentQuizIndex].QuizID}
             className="border p-4 rounded-lg bg-white shadow-lg"
           >
-            {/* Render the current question in the TemplatePreview */}
-            <TemplatePreview
-              key={
-                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
-                  .QuestionID
-              }
-              questions={[
-                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
-                  .QuestionText,
-              ]}
-              answers={
-                quizzes[currentQuizIndex].Questions[currentQuestionIndex]
-                  .Answers
-              }
-              layout={quizzes[currentQuizIndex].Layout}
-              buttonColor={quizzes[currentQuizIndex].ButtonColor}
-              backgroundColor={quizzes[currentQuizIndex].BackgroundColor}
-              buttonStyle={quizzes[currentQuizIndex].buttonStyle}
-              currentTemplateIndex={currentQuestionIndex}
-              totalTemplates={quizzes[currentQuizIndex].Questions.length}
-              onAnswerSelect={() => handleAnswerSelect(quizzes.QuizID)}
-            />
-            {/* Navigation Buttons */}
+            {currentQuestionIndex <
+            quizzes[currentQuizIndex].Questions.length ? (
+              <TemplatePreview
+                key={
+                  quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                    .QuestionID
+                }
+                questions={[
+                  quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                    .QuestionText,
+                ]}
+                answers={
+                  quizzes[currentQuizIndex].Questions[currentQuestionIndex]
+                    .Answers
+                }
+                layout={quizzes[currentQuizIndex].Layout}
+                buttonColor={quizzes[currentQuizIndex].ButtonColor}
+                backgroundColor={quizzes[currentQuizIndex].BackgroundColor}
+                buttonStyle={quizzes[currentQuizIndex].buttonStyle}
+                currentTemplateIndex={currentQuestionIndex}
+                totalTemplates={quizzes[currentQuizIndex].Questions.length + 1} // Include the default question
+                onAnswerSelect={() =>
+                  handleAnswerSelect(quizzes[currentQuizIndex].QuizID)
+                }
+              />
+            ) : (
+              <CongratulationsScreen
+                key={currentQuiz.QuizID}
+                layout={currentQuiz.Layout}
+                buttonColor={currentQuiz.ButtonColor}
+                backgroundColor={currentQuiz.BackgroundColor}
+                buttonStyle={currentQuiz.buttonStyle}
+                currentTemplateIndex={0} // Reset for the final screen
+                totalTemplates={1} // Only one congratulations screen
+                message={
+                  couponExists
+                    ? "You completed the quiz!"
+                    : "Thank you for participating!"
+                }
+                expirationDate={
+                  couponExists ? currentQuiz.CouponDetails.ExpirationDate : null
+                }
+                couponDetails={
+                  couponExists ? currentQuiz.CouponDetails.Details : null
+                }
+              />
+            )}
             <div className="flex justify-between mt-4">
               <button
                 onClick={handlePrev}
@@ -176,7 +204,7 @@ const MyQuizzes = () => {
                 onClick={handleNext}
                 disabled={
                   currentQuestionIndex ===
-                  quizzes[currentQuizIndex].Questions.length - 1
+                  quizzes[currentQuizIndex].Questions.length
                 }
                 className="px-4 py-2 bg-gray-300 rounded-lg"
               >

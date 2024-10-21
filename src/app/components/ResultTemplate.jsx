@@ -11,7 +11,6 @@ export default function ResultPage({
   expirationDate,
   couponDetails,
 }) {
-  
   // Define the container for the result page
   const [flipped, setFlipped] = useState(false);
 
