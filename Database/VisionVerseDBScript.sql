@@ -15,9 +15,10 @@ CREATE TABLE "Quiz" (
   "Description" text,
   "DateCreated" date NOT NULL,
   "User_UserID" integer NOT NULL,
-  "TemplateID" integer NOT NULL,
   "Layout" text,
   "IsLarge" boolean,
+  "buttonColor" text NOT NULL,
+  "backgroundColor" text NOT NULL,
   "buttonStyle" text NOT NULL,
   CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID"),
   CONSTRAINT "Quiz_User_UserID_fkey"
@@ -35,12 +36,12 @@ CREATE TABLE "Page" (
 );
 
 CREATE TABLE "Question" (
-  "QuestionID" integer NOT NULL,
+  "QuestionID" serial NOT NULL,
   "QuestionText" text NOT NULL,
-  "Page_PageID" integer NOT NULL,
+  "Answers" text NOT NULL,
   CONSTRAINT "Question_pkey" PRIMARY KEY("QuestionID"),
-  CONSTRAINT "Question_Page_PageID_fkey"
-    FOREIGN KEY ("Page_PageID") REFERENCES "Page" ("PageID")
+  CONSTRAINT "Question_Page_QuizID_fkey"
+    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
 
 CREATE TABLE "QuestionOption" (
@@ -63,13 +64,13 @@ CREATE TABLE "QuizResult" (
     FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
 
-CREATE TABLE "Reward" (
-  "RewardID" integer NOT NULL,
-  "Name" text,
-  "Barcode" bytea,
-  "CategoryScore" integer,
+CREATE TABLE "Coupon" (
+  "CouponID" serial NOT NULL,
+  "Message" text,
+  "Details" text,
+  "Expiry" date,
   "Quiz_QuizID" integer NOT NULL,
-  CONSTRAINT "Reward_pkey" PRIMARY KEY("RewardID"),
-  CONSTRAINT "Reward_Quiz_QuizID_fkey"
+  CONSTRAINT "Coupon_pkey" PRIMARY KEY("CouponID"),
+  CONSTRAINT "Coupon_Quiz_QuizID_fkey"
     FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
 );
