@@ -28,21 +28,23 @@ const ResultManager = ({
                 placeholder="Enter your message"
               />
             </div>
-            <h1>Select a header image:</h1>
+
+            {/* Front Image Upload */}
+            <h1>Select a front image:</h1>
             <div className="flex items-center mb-2">
               <label className="flex items-center gap-2 cursor-pointer">
                 <FiImage />
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(index, e)}
+                  onChange={(e) => handleImageUpload(index, e, "front")}
                   className="border rounded-full p-2 w-full"
                 />
               </label>
-              {result.imageUrl && (
+              {result.frontImageUrl && (
                 <button
                   type="button"
-                  onClick={() => removeImage(index)}
+                  onClick={() => removeImage(index, "front")}
                   className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                   <FiTrash />
@@ -50,13 +52,45 @@ const ResultManager = ({
                 </button>
               )}
             </div>
-            {result.imageUrl && (
+            {result.frontImageUrl && (
               <img
-                src={result.imageUrl}
-                alt={`Uploaded Preview ${index}`}
+                src={result.frontImageUrl}
+                alt={`Front Image Preview ${index}`}
                 className="w-full h-32 object-cover rounded-lg mb-2"
               />
             )}
+
+            {/* Back Image Upload */}
+            <h1>Select a back image:</h1>
+            <div className="flex items-center mb-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <FiImage />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(index, e, "back")}
+                  className="border rounded-full p-2 w-full"
+                />
+              </label>
+              {result.backImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => removeImage(index, "back")}
+                  className="ml-2 bg-red-500 text-white py-2 px-4 flex items-center gap-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  <FiTrash />
+                  Remove Image
+                </button>
+              )}
+            </div>
+            {result.backImageUrl && (
+              <img
+                src={result.backImageUrl}
+                alt={`Back Image Preview ${index}`}
+                className="w-full h-32 object-cover rounded-lg mb-2"
+              />
+            )}
+
             <div className="flex items-center mt-4">
               <FiType />
               <input

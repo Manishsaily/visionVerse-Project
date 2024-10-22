@@ -10,6 +10,8 @@ export default function ResultPage({
   message,
   expirationDate,
   couponDetails,
+  frontImageUrl,
+  backImageUrl,
 }) {
   // Define the container for the result page
   const [flipped, setFlipped] = useState(false);
@@ -17,9 +19,6 @@ export default function ResultPage({
   const handleFlip = () => {
     setFlipped((prev) => !prev);
   };
-
-  const imageUrl = "/coffee-2.webp"; // Replace with your image path
-  const imageUrl2 = "/coffee.jpg"; // Replace with your image path
 
   const handleButtonClick = (event) => {
     event.stopPropagation(); // Prevent click from bubbling up
@@ -55,7 +54,7 @@ export default function ResultPage({
               width: "100%",
               height: "100%",
               backfaceVisibility: "hidden",
-              backgroundImage: `url(${imageUrl})`, // Replace with your image path
+              backgroundImage: `url(${frontImageUrl})`, // Replace with your image path
               backgroundSize: "cover", // Cover the entire area
               backgroundPosition: "center", // Center the image
               display: "flex",
@@ -85,7 +84,7 @@ export default function ResultPage({
               height: "100%",
               backfaceVisibility: "hidden",
               rotateY: 180,
-              backgroundImage: `url(${imageUrl2})`, // Replace with your image path
+              backgroundImage: `url(${backImageUrl})`, // Replace with your image path
               backgroundSize: "cover", // Cover the entire area
               backgroundPosition: "center", // Center the image
               display: "flex",

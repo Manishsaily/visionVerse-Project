@@ -17,8 +17,8 @@ CREATE TABLE "Quiz" (
   "User_UserID" integer NOT NULL,
   "Layout" text,
   "IsLarge" boolean,
-  "buttonColor" text NOT NULL,
-  "backgroundColor" text NOT NULL,
+  "ButtonColor" text NOT NULL,
+  "BackgroundColor" text NOT NULL,
   "buttonStyle" text NOT NULL,
   CONSTRAINT "Quiz_pkey" PRIMARY KEY("QuizID"),
   CONSTRAINT "Quiz_User_UserID_fkey"
@@ -29,19 +29,20 @@ CREATE TABLE "Page" (
   "PageID" integer NOT NULL,
   "PageType" text,
   "Index" integer,
-  "Quiz_QuizID" integer NOT NULL,
+  "QuizID" integer NOT NULL,  -- Changed to QuizID
   CONSTRAINT "Page_pkey" PRIMARY KEY("PageID"),
-  CONSTRAINT "Page_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
+  CONSTRAINT "Page_QuizID_fkey"
+    FOREIGN KEY ("QuizID") REFERENCES "Quiz" ("QuizID")  -- Updated reference
 );
 
 CREATE TABLE "Question" (
   "QuestionID" serial NOT NULL,
   "QuestionText" text NOT NULL,
-  "Answers" text NOT NULL,
+  "Answers" text[] NOT NULL,  -- Change to jsonb to store an array
+  "QuizID" integer NOT NULL,
   CONSTRAINT "Question_pkey" PRIMARY KEY("QuestionID"),
-  CONSTRAINT "Question_Page_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
+  CONSTRAINT "Question_QuizID_fkey"
+    FOREIGN KEY ("QuizID") REFERENCES "Quiz" ("QuizID")
 );
 
 CREATE TABLE "QuestionOption" (
@@ -58,19 +59,25 @@ CREATE TABLE "QuizResult" (
   "StartDate" date,
   "EndDate" date,
   "QuizAttempts" integer,
-  "Quiz_QuizID" integer NOT NULL,
+  "QuizID" integer NOT NULL,  -- Changed to QuizID
   CONSTRAINT "QuizResult_pkey" PRIMARY KEY("ResultID"),
-  CONSTRAINT "QuizResult_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
+  CONSTRAINT "QuizResult_QuizID_fkey"
+    FOREIGN KEY ("QuizID") REFERENCES "Quiz" ("QuizID")  -- Updated reference
 );
 
 CREATE TABLE "Coupon" (
   "CouponID" serial NOT NULL,
   "Message" text,
-  "Details" text,
+  "CouponDetails" text,
   "Expiry" date,
-  "Quiz_QuizID" integer NOT NULL,
+  "QuizID" integer NOT NULL,
+  "FrontImage" bytea,  -- Column for front image
+  "BackImage" bytea,   -- Column for back image
   CONSTRAINT "Coupon_pkey" PRIMARY KEY("CouponID"),
-  CONSTRAINT "Coupon_Quiz_QuizID_fkey"
-    FOREIGN KEY ("Quiz_QuizID") REFERENCES "Quiz" ("QuizID")
+  CONSTRAINT "Coupon_QuizID_fkey"
+    FOREIGN KEY ("QuizID") REFERENCES "Quiz" ("QuizID")
 );
+
+
+INSERT INTO "User" ("Username", "Password", "Email", "CreationDate")
+VALUES ('defaultUser', 'password123', 'default@example.com', CURRENT_DATE);

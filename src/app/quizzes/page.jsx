@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import TemplatePreview from "../components/TemplatePreview";
-import { FiTrash, FiEdit2 } from "react-icons/fi"; // Add FiPencil here
+import { FiTrash, FiEdit2 } from "react-icons/fi";
 import CongratulationsScreen from "../components/CongratulationsScreen";
 
 const MyQuizzes = () => {
@@ -9,6 +9,7 @@ const MyQuizzes = () => {
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const userId = 1;
+  const [coupons, setCoupons] = useState([]);
 
   // Fetch quizzes from the API
   useEffect(() => {
@@ -27,6 +28,29 @@ const MyQuizzes = () => {
     };
     fetchQuizzes();
   }, [userId]);
+
+  // Fetch coupons for the current quiz
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      if (quizzes.length === 0) return;
+
+      const currentQuiz = quizzes[currentQuizIndex];
+      if (currentQuiz && currentQuiz.QuizID) {
+        try {
+          const response = await fetch(
+            `/api/coupons?quizId=${currentQuiz.QuizID}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch coupons");
+          const data = await response.json();
+          setCoupons(data); // Assuming data is an array of coupon objects
+        } catch (error) {
+          console.error("Error fetching coupons:", error);
+        }
+      }
+    };
+
+    fetchCoupons();
+  }, [quizzes, currentQuizIndex]);
 
   // Function to handle delete
   const handleDelete = async (quizId) => {
@@ -104,7 +128,7 @@ const MyQuizzes = () => {
   };
 
   const currentQuiz = quizzes[currentQuizIndex];
-  const couponExists = currentQuiz && currentQuiz.CouponDetails;
+  const currentCoupons = coupons.length > 0 ? coupons : null;
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-black">
@@ -122,18 +146,37 @@ const MyQuizzes = () => {
                 className="p-3"
                 aria-label="Edit Quiz"
               >
-                <FiEdit2 size={20} /> {/* Use a pencil icon here */}
+                <FiEdit2 size={20} />
               </button>
               <div
                 className={`flex-grow cursor-pointer text-center`}
                 onClick={() => handleQuizSelect(index)}
               >
-                {quiz.Name} {/* Display quiz name */}
+                {quiz.Name}
               </div>
 
               <button onClick={() => handleDelete(quiz.QuizID)} className="p-3">
                 <FiTrash size={20} />
               </button>
+              {quiz.CouponDetails ? (
+                <button
+                  onClick={() =>
+                    handleRemoveQuizIdFromCoupon(quiz.CouponDetails.CouponID)
+                  }
+                  className="p-3 text-red-600"
+                  aria-label="Remove QuizID from Coupon"
+                >
+                  Remove QuizID
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleAddCoupon(quiz.QuizID)}
+                  className="p-3 text-green-600"
+                  aria-label="Add Coupon"
+                >
+                  Add Coupon
+                </button>
+              )}
             </li>
           ))}
         </ul>
@@ -165,7 +208,7 @@ const MyQuizzes = () => {
                 backgroundColor={quizzes[currentQuizIndex].BackgroundColor}
                 buttonStyle={quizzes[currentQuizIndex].buttonStyle}
                 currentTemplateIndex={currentQuestionIndex}
-                totalTemplates={quizzes[currentQuizIndex].Questions.length} // Include the default question
+                totalTemplates={quizzes[currentQuizIndex].Questions.length}
                 onAnswerSelect={() =>
                   handleAnswerSelect(quizzes[currentQuizIndex].QuizID)
                 }
@@ -178,15 +221,15 @@ const MyQuizzes = () => {
                 backgroundColor={currentQuiz.BackgroundColor}
                 buttonStyle={currentQuiz.buttonStyle}
                 message={
-                  couponExists
+                  currentCoupons
                     ? "You completed the quiz!"
                     : "Thank you for participating!"
                 }
                 expirationDate={
-                  couponExists ? currentQuiz.CouponDetails.ExpirationDate : null
+                  currentCoupons ? currentCoupons[0].ExpirationDate : null
                 }
                 couponDetails={
-                  couponExists ? currentQuiz.CouponDetails.Details : null
+                  currentCoupons ? currentCoupons[0].CouponDetails : null
                 }
                 onRetry={handleRetry}
               />
