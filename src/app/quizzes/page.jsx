@@ -59,7 +59,7 @@ const MyQuizzes = () => {
   };
 
   // Function to handle Previous
-  const handlePrev = () => {
+  const handleRetry = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - currentQuestionIndex);
     }
@@ -188,27 +188,9 @@ const MyQuizzes = () => {
                 couponDetails={
                   couponExists ? currentQuiz.CouponDetails.Details : null
                 }
+                onRetry={handleRetry}
               />
             )}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handlePrev}
-                disabled={currentQuestionIndex === 0}
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={
-                  currentQuestionIndex ===
-                  quizzes[currentQuizIndex].Questions.length
-                }
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-              >
-                Next
-              </button>
-            </div>
           </div>
         )}
       </div>
