@@ -61,7 +61,7 @@ const MyQuizzes = () => {
   // Function to handle Previous
   const handlePrev = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+      setCurrentQuestionIndex((prevIndex) => prevIndex - currentQuestionIndex);
     }
   };
 
@@ -165,7 +165,7 @@ const MyQuizzes = () => {
                 backgroundColor={quizzes[currentQuizIndex].BackgroundColor}
                 buttonStyle={quizzes[currentQuizIndex].buttonStyle}
                 currentTemplateIndex={currentQuestionIndex}
-                totalTemplates={quizzes[currentQuizIndex].Questions.length + 1} // Include the default question
+                totalTemplates={quizzes[currentQuizIndex].Questions.length} // Include the default question
                 onAnswerSelect={() =>
                   handleAnswerSelect(quizzes[currentQuizIndex].QuizID)
                 }
@@ -177,8 +177,6 @@ const MyQuizzes = () => {
                 buttonColor={currentQuiz.ButtonColor}
                 backgroundColor={currentQuiz.BackgroundColor}
                 buttonStyle={currentQuiz.buttonStyle}
-                currentTemplateIndex={0} // Reset for the final screen
-                totalTemplates={1} // Only one congratulations screen
                 message={
                   couponExists
                     ? "You completed the quiz!"

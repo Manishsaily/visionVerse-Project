@@ -10,15 +10,6 @@ export default function CongratulationsScreen({
   message = "Thank you for participating!", // Default message
   expirationDate,
   couponDetails,
-  questions,
-  answers,
-  isLarge,
-  layout,
-  imageUrl3,
-  imageUrl4,
-  currentTemplateIndex = 0, // Default value
-  totalTemplates = 1, // Default value
-  onAnswerSelect,
 }) {
   const [flipped, setFlipped] = useState(false);
   const imageUrl = "/coffee-2.webp"; // Replace with your image path
@@ -28,39 +19,49 @@ export default function CongratulationsScreen({
     setFlipped((prev) => !prev);
   };
 
-  const renderLargeNumberProgress = () => {
-    return (
-      <div className="flex justify-center items-center h-full mr-52">
-        <span className="text-6xl font-bold text-blue-600">
-          {currentTemplateIndex + 1}
-        </span>
-        <span className="text-2xl text-gray-600 ml-2">/ {totalTemplates}</span>
-      </div>
-    );
-  };
-
-  // Render progress circles for style2
-  const renderProgressCircles = () => {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-16">
-        {Array.from({ length: totalTemplates }, (_, idx) => (
-          <div
-            key={idx}
-            className={`w-11 h-11 rounded-full flex justify-center items-center border-2 ${
-              idx === currentTemplateIndex
-                ? "bg-orange-600 text-white"
-                : "border-orange-600"
-            }`}
+  const getButton = (label, onClick) => {
+    switch (buttonStyle) {
+      case "style1":
+        return (
+          <button
+            onClick={onClick}
+            className="w-full mt-2 py-4 rounded-lg border-2 border-blue-500 text-black focus:outline-none focus:ring-2 text-lg"
+            style={{ backgroundColor: "white" }}
           >
-            {idx === currentTemplateIndex && (
-              <span className="text-lg font-semibold">
-                {currentTemplateIndex + 1}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    );
+            {label}
+          </button>
+        );
+      case "style2":
+        return (
+          <button
+            onClick={onClick}
+            className="w-full mt-2 py-4 rounded-lg border-2 border-white text-lg text-black"
+            style={{ backgroundColor: "lightgray" }}
+          >
+            {label}
+          </button>
+        );
+      case "style3":
+        return (
+          <button
+            onClick={onClick}
+            className="w-full mt-2 py-4 rounded-lg border-2 border-black bg-white text-black text-lg"
+          >
+            {label}
+          </button>
+        );
+      case "style4":
+        return (
+          <button
+            onClick={onClick}
+            className="w-full mt-2 py-4 rounded-lg bg-gray-700 text-white text-lg"
+          >
+            {label}
+          </button>
+        );
+      default:
+        return null;
+    }
   };
 
   const getResultContainer = () => {
@@ -112,24 +113,25 @@ export default function CongratulationsScreen({
             <p className="text-lg text-center">{message}</p>
             <button
               onClick={onHome}
-              className="w-full mt-2 py-4 rounded-lg bg-white text-black"
+              className="w-full mt-2 py-4 rounded-lg text-black"
             >
-              Go to Home
+              {getButton("Go to Home")}
             </button>
             {couponDetails && (
               <button
-                onClick={handleFlip}
-                className="w-full mt-2 py-4 rounded-lg bg-white text-black"
+                className="w-full mt-2 py-4 rounded-lg text-black"
+               
               >
-                Claim Coupon
+                {getButton("Claim Coupon", handleFlip)}
               </button>
             )}
             {!couponDetails && (
               <button
                 onClick={onRetry}
-                className="w-full mt-2 py-4 rounded-lg bg-white text-black"
+                className="w-full mt-2 py-4 rounded-lg text-black"
+            
               >
-                Retry Quiz
+                {getButton("Retry Quiz")}
               </button>
             )}
           </motion.div>
@@ -195,33 +197,12 @@ export default function CongratulationsScreen({
           className="h-full rounded-[40px] overflow-hidden relative"
           style={{ backgroundColor }}
         >
-          {/* Progress Bar Container */}
+        
           <div
             className={`w-full px-4 py-2 ${
               buttonStyle === "style2" ? "bg-gray-400" : ""
             } h-[175px]`} // Gray background only for style2
           >
-            {buttonStyle === "style3" ? (
-              renderLargeNumberProgress()
-            ) : buttonStyle === "style2" ? (
-              renderProgressCircles()
-            ) : (
-              <div className="rounded-full h-6 relative">
-                <div
-                  className="bg-blue-600 rounded-full p-4 mt-12"
-                  style={{
-                    width: `${
-                      ((currentTemplateIndex + 1) / totalTemplates) * 100
-                    }%`,
-                    height: "100%",
-                  }}
-                >
-                  <span className="text-black text-xs font-semibold absolute left-1/2 -translate-x-1/2 top-1/2 transform -translate-y-1/2">
-                    {currentTemplateIndex + 1} of {totalTemplates}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
           {/* Result Content */}
           <div className={`p-8 `}>
