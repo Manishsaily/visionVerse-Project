@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import TemplatePreview from "../components/TemplatePreview";
 import { FiTrash, FiEdit2 } from "react-icons/fi";
 import CongratulationsScreen from "../components/CongratulationsScreen";
+import { RightNavbar } from "../components/RightBar";
 
 const MyQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -267,6 +268,9 @@ const MyQuizzes = () => {
             )}
           </div>
         )}
+      </div>
+      <div className="w-1/6 p-4 ml-auto bg-white border-l border-gray-300 shadow-xl">
+        <RightNavbar />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const NavbarItem = ({ label, href, isActive, onClick }) => {
   return (
@@ -22,13 +23,25 @@ const NavbarItem = ({ label, href, isActive, onClick }) => {
 };
 
 export const RightNavbar = () => {
-  const [activeIndex, setActiveIndex] = useState(0); // Track active navbar item
+
+  const [activeIndex, setActiveIndex] = useState(null); // Track active navbar item
+  const pathname = usePathname();
 
   const navItems = [
-    { label: "Onboard", href: "" },
+    { label: "On Board", href: "" },
     { label: "Result", href: "/result" },
     { label: "Quiz", href: "/style" },
+    
   ];
+
+  useEffect(() => {
+    // Check if current pathname matches any of the nav item hrefs
+    const index = navItems.findIndex((item) => {
+      return item.href === pathname || 
+             (item.label === "Quiz" && (pathname.startsWith("/template") || pathname.startsWith("/setting")));
+    });
+    setActiveIndex(index !== -1 ? index : null); // No default, only set if a match
+  }, [pathname]);
 
   return (
     <div className="mt-40 h-1/4 p-4 rounded-lg">
